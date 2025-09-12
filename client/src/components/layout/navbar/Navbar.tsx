@@ -29,6 +29,9 @@ import {
   Layers,
   Settings,
   LogOut,
+  Clock,
+  Copy,
+  MapPin,
 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -54,7 +57,19 @@ const links = [
     loggedIn: false,
   },
   {
-    name: "Cart",
+    name: "Order History",
+    href: "/dashboard/orders",
+    icon: <Clock />,
+    loggedIn: true,
+  },
+  {
+    name: "Track Order",
+    href: "/track",
+    icon: <MapPin />,
+    loggedIn: true,
+  },
+  {
+    name: "Shopping Cart",
     href: "/cart",
     icon: <ShoppingCart size={18} />,
     loggedIn: false,
@@ -66,8 +81,14 @@ const links = [
     loggedIn: false,
   },
   {
+    name: "Compare",
+    href: "/compare",
+    icon: <Copy />,
+    loggedIn: false,
+  },
+  {
     name: "Settings",
-    href: "/settings",
+    href: "/dashboard/settings",
     icon: <Settings size={18} />,
     loggedIn: true,
   },
@@ -211,7 +232,7 @@ const MobileMenu = ({
 }) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  
+
   const { mutate, isPending } = useSignout({
     onSuccess: (data) => {
       toaster.create({
@@ -219,7 +240,7 @@ const MobileMenu = ({
         type: "success",
       });
       setOpen(false);
-      navigate({ to: '/', reloadDocument: true });
+      navigate({ to: "/", reloadDocument: true });
       queryClient.invalidateQueries({
         queryKey: queryKeys.getProfile,
       });

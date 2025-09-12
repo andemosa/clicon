@@ -39,15 +39,13 @@ const AuthPopover = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const switchToLogin = () => {
-    setDisplay(LOGIN_FORM);
-  };
-  const switchToSignup = () => {
-    setDisplay(SIGNUP_FORM);
-  };
-  const switchToForgotPassword = () => {
-    setDisplay(FORGOTPASSWORD_FORM);
-  };
+  const switchToLogin = () => setDisplay(LOGIN_FORM);
+
+  const switchToSignup = () => setDisplay(SIGNUP_FORM);
+
+  const switchToForgotPassword = () => setDisplay(FORGOTPASSWORD_FORM);
+
+  const closePopover = () => setOpen(false);
 
   const { data, isFetching, isError } = useProfileQuery();
 
@@ -125,7 +123,7 @@ const AuthPopover = () => {
                   </Flex>
                 </Link>
                 <Link
-                  to={"/settings"}
+                  to={"/dashboard/settings"}
                   _hover={{
                     textDecoration: "none",
                     background: "orange.500",
@@ -172,6 +170,7 @@ const AuthPopover = () => {
                   <LoginForm
                     switchToForgotPassword={switchToForgotPassword}
                     switchToSignup={switchToSignup}
+                    closePopover={closePopover}
                   />
                 ) : display === SIGNUP_FORM ? (
                   <SignupForm switchToLogin={switchToLogin} />

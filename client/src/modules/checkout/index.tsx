@@ -174,7 +174,7 @@ const CheckoutPage = () => {
             <HStack gap="10" width="full">
               <Field.Root required>
                 <Field.Label>
-                  Order Notes{" "}
+                  Order Notes&nbsp;
                   <Text as={"span"} fontSize={"xs"} color={"gray.400"}>
                     (Optional)
                   </Text>

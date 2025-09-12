@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as ShopRouteImport } from './routes/shop'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CompareRouteImport } from './routes/compare'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
@@ -24,6 +25,10 @@ import { Route as authSignupRouteImport } from './routes/(auth)/signup'
 import { Route as authSigninRouteImport } from './routes/(auth)/signin'
 import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
+import { Route as DashboardSettingsIndexRouteImport } from './routes/dashboard/settings/index'
+import { Route as DashboardOrdersIndexRouteImport } from './routes/dashboard/orders/index'
+import { Route as DashboardHistoryIndexRouteImport } from './routes/dashboard/history/index'
+import { Route as DashboardOrdersOrderIdRouteImport } from './routes/dashboard/orders/$orderId'
 
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
@@ -33,6 +38,11 @@ const WishlistRoute = WishlistRouteImport.update({
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CompareRoute = CompareRouteImport.update({
@@ -61,9 +71,9 @@ const TrackIndexRoute = TrackIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const TrackOrderIdRoute = TrackOrderIdRouteImport.update({
   id: '/track/$orderId',
@@ -100,12 +110,33 @@ const authForgotPasswordRoute = authForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardSettingsIndexRoute = DashboardSettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardOrdersIndexRoute = DashboardOrdersIndexRouteImport.update({
+  id: '/orders/',
+  path: '/orders/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardHistoryIndexRoute = DashboardHistoryIndexRouteImport.update({
+  id: '/history/',
+  path: '/history/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardOrdersOrderIdRoute = DashboardOrdersOrderIdRouteImport.update({
+  id: '/orders/$orderId',
+  path: '/orders/$orderId',
+  getParentRoute: () => DashboardRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/compare': typeof CompareRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/shop': typeof ShopRoute
   '/wishlist': typeof WishlistRoute
   '/forgot-password': typeof authForgotPasswordRoute
@@ -115,8 +146,12 @@ export interface FileRoutesByFullPath {
   '/verify-email': typeof authVerifyEmailRoute
   '/products/$productId': typeof ProductsProductIdRoute
   '/track/$orderId': typeof TrackOrderIdRoute
-  '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/track': typeof TrackIndexRoute
+  '/dashboard/orders/$orderId': typeof DashboardOrdersOrderIdRoute
+  '/dashboard/history': typeof DashboardHistoryIndexRoute
+  '/dashboard/orders': typeof DashboardOrdersIndexRoute
+  '/dashboard/settings': typeof DashboardSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -134,6 +169,10 @@ export interface FileRoutesByTo {
   '/track/$orderId': typeof TrackOrderIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/track': typeof TrackIndexRoute
+  '/dashboard/orders/$orderId': typeof DashboardOrdersOrderIdRoute
+  '/dashboard/history': typeof DashboardHistoryIndexRoute
+  '/dashboard/orders': typeof DashboardOrdersIndexRoute
+  '/dashboard/settings': typeof DashboardSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -141,6 +180,7 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/compare': typeof CompareRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/shop': typeof ShopRoute
   '/wishlist': typeof WishlistRoute
   '/(auth)/forgot-password': typeof authForgotPasswordRoute
@@ -152,6 +192,10 @@ export interface FileRoutesById {
   '/track/$orderId': typeof TrackOrderIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/track/': typeof TrackIndexRoute
+  '/dashboard/orders/$orderId': typeof DashboardOrdersOrderIdRoute
+  '/dashboard/history/': typeof DashboardHistoryIndexRoute
+  '/dashboard/orders/': typeof DashboardOrdersIndexRoute
+  '/dashboard/settings/': typeof DashboardSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -160,6 +204,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/compare'
+    | '/dashboard'
     | '/shop'
     | '/wishlist'
     | '/forgot-password'
@@ -169,8 +214,12 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/products/$productId'
     | '/track/$orderId'
-    | '/dashboard'
+    | '/dashboard/'
     | '/track'
+    | '/dashboard/orders/$orderId'
+    | '/dashboard/history'
+    | '/dashboard/orders'
+    | '/dashboard/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -188,12 +237,17 @@ export interface FileRouteTypes {
     | '/track/$orderId'
     | '/dashboard'
     | '/track'
+    | '/dashboard/orders/$orderId'
+    | '/dashboard/history'
+    | '/dashboard/orders'
+    | '/dashboard/settings'
   id:
     | '__root__'
     | '/'
     | '/cart'
     | '/checkout'
     | '/compare'
+    | '/dashboard'
     | '/shop'
     | '/wishlist'
     | '/(auth)/forgot-password'
@@ -205,6 +259,10 @@ export interface FileRouteTypes {
     | '/track/$orderId'
     | '/dashboard/'
     | '/track/'
+    | '/dashboard/orders/$orderId'
+    | '/dashboard/history/'
+    | '/dashboard/orders/'
+    | '/dashboard/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -212,6 +270,7 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   CompareRoute: typeof CompareRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   ShopRoute: typeof ShopRoute
   WishlistRoute: typeof WishlistRoute
   authForgotPasswordRoute: typeof authForgotPasswordRoute
@@ -221,7 +280,6 @@ export interface RootRouteChildren {
   authVerifyEmailRoute: typeof authVerifyEmailRoute
   ProductsProductIdRoute: typeof ProductsProductIdRoute
   TrackOrderIdRoute: typeof TrackOrderIdRoute
-  DashboardIndexRoute: typeof DashboardIndexRoute
   TrackIndexRoute: typeof TrackIndexRoute
 }
 
@@ -239,6 +297,13 @@ declare module '@tanstack/react-router' {
       path: '/shop'
       fullPath: '/shop'
       preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/compare': {
@@ -278,10 +343,10 @@ declare module '@tanstack/react-router' {
     }
     '/dashboard/': {
       id: '/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard'
+      path: '/'
+      fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/track/$orderId': {
       id: '/track/$orderId'
@@ -332,14 +397,63 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/settings/': {
+      id: '/dashboard/settings/'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof DashboardSettingsIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/orders/': {
+      id: '/dashboard/orders/'
+      path: '/orders'
+      fullPath: '/dashboard/orders'
+      preLoaderRoute: typeof DashboardOrdersIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/history/': {
+      id: '/dashboard/history/'
+      path: '/history'
+      fullPath: '/dashboard/history'
+      preLoaderRoute: typeof DashboardHistoryIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/orders/$orderId': {
+      id: '/dashboard/orders/$orderId'
+      path: '/orders/$orderId'
+      fullPath: '/dashboard/orders/$orderId'
+      preLoaderRoute: typeof DashboardOrdersOrderIdRouteImport
+      parentRoute: typeof DashboardRoute
+    }
   }
 }
+
+interface DashboardRouteChildren {
+  DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardOrdersOrderIdRoute: typeof DashboardOrdersOrderIdRoute
+  DashboardHistoryIndexRoute: typeof DashboardHistoryIndexRoute
+  DashboardOrdersIndexRoute: typeof DashboardOrdersIndexRoute
+  DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardIndexRoute: DashboardIndexRoute,
+  DashboardOrdersOrderIdRoute: DashboardOrdersOrderIdRoute,
+  DashboardHistoryIndexRoute: DashboardHistoryIndexRoute,
+  DashboardOrdersIndexRoute: DashboardOrdersIndexRoute,
+  DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   CompareRoute: CompareRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   ShopRoute: ShopRoute,
   WishlistRoute: WishlistRoute,
   authForgotPasswordRoute: authForgotPasswordRoute,
@@ -349,7 +463,6 @@ const rootRouteChildren: RootRouteChildren = {
   authVerifyEmailRoute: authVerifyEmailRoute,
   ProductsProductIdRoute: ProductsProductIdRoute,
   TrackOrderIdRoute: TrackOrderIdRoute,
-  DashboardIndexRoute: DashboardIndexRoute,
   TrackIndexRoute: TrackIndexRoute,
 }
 export const routeTree = rootRouteImport

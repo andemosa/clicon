@@ -20,7 +20,7 @@ interface Product {
   name: string;
   price: number;
   discountPrice?: number;
-  badge?: string; // e.g. "Sold Out", "40% Off"
+  badge?: string;
   image: string;
 }
 

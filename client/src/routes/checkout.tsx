@@ -1,5 +1,5 @@
 import Layout from "@/components/layout";
-import BreadCrumpComp from "@/components/layout/BreadCrumpComp";
+import BreadCrumbComp from "@/components/layout/BreadCrumbComp";
 import CheckoutPage from "@/modules/checkout";
 import { createFileRoute } from "@tanstack/react-router";
 import { Home } from "lucide-react";
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/checkout")({
 function RouteComponent() {
   return (
     <Layout>
-      <BreadCrumpComp
+      <BreadCrumbComp
         items={[
           { label: "Home", href: "/", icon: <Home size={14} /> },
           { label: "Cart", href: "/cart" },

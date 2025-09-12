@@ -22,6 +22,8 @@ Http.interceptors.response.use(
 function transformError(err: unknown): ApiError {
   const axiosErr = err as any;
 
+  // console.log(err)
+
   if (axiosErr.response) {
     const statusCode = axiosErr.response.status;
     return {

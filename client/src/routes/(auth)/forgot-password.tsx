@@ -1,5 +1,5 @@
 import Layout from "@/components/layout";
-import BreadCrumpComp from "@/components/layout/BreadCrumpComp";
+import BreadCrumbComp from "@/components/layout/BreadCrumbComp";
 import ForgotPasswordPage from "@/modules/auth/forgot-password";
 import { createFileRoute } from "@tanstack/react-router";
 import { Home } from "lucide-react";
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/(auth)/forgot-password")({
 function RouteComponent() {
   return (
     <Layout>
-      <BreadCrumpComp
+      <BreadCrumbComp
         items={[
           { label: "Home", href: "/", icon: <Home size={14} /> },
           { label: "User Account" },

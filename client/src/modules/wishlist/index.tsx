@@ -6,10 +6,82 @@ import {
   IconButton,
   Image,
   Flex,
+  Skeleton,
+  chakra,
+  Stack,
+  Heading,
 } from "@chakra-ui/react";
-import { CircleX, ShoppingCart } from "lucide-react";
+import { CircleX, ArrowRightIcon, ShoppingCart } from "lucide-react";
+import { Link as RouterLink } from "@tanstack/react-router";
+
+import { useProfileQuery } from "@/services/auth/auth.hooks";
+
+const NavigateLink = chakra(RouterLink);
 
 const WishlistPage = () => {
+  const { data, isFetching, isError } = useProfileQuery();
+
+  if (!isFetching && (isError || !data)) {
+    return (
+      <Flex
+        align={"center"}
+        justify={"center"}
+        direction={"column"}
+        color={"gray.900"}
+      >
+        <Stack
+          mx={"auto"}
+          align={"center"}
+          textAlign={"center"}
+          w={"full"}
+          maxW={"600px"}
+          gap={1}
+          p={{ base: 4, md: 6 }}
+        >
+          <Image src="/images/404.webp" alt="404 Illustration" maxW="320px" />
+          <Heading
+            fontSize={{ base: "2xl", md: "3xl" }}
+            fontWeight="bold"
+            mb={3}
+          >
+            Not Signed in
+          </Heading>
+          <Text color="gray.600" maxW="lg" mb={2}>
+            Sorry, you need to be signed in to see your wishlist.
+          </Text>
+          <NavigateLink
+            to={"/signin"}
+            _hover={{
+              textDecoration: "none",
+            }}
+          >
+            <Button
+              size="md"
+              w="max-content"
+              textTransform="uppercase"
+              bg="orange.500"
+              color="white"
+              fontWeight={700}
+              _hover={{ bg: "orange.500" }}
+              _active={{ bg: "orange.500" }}
+            >
+              Signin&nbsp;
+              <ArrowRightIcon />
+            </Button>
+          </NavigateLink>
+        </Stack>
+      </Flex>
+    );
+  }
+
+  if (isFetching) {
+    return (
+      <Flex px={6} py={6}>
+        <Skeleton height="300px" width="full" />
+      </Flex>
+    );
+  }
+
   return (
     <Box
       px={{ base: 6, lg: 12 }}
@@ -29,17 +101,28 @@ const WishlistPage = () => {
         </Text>
 
         <Table.ScrollArea borderWidth="1px" w="full">
-          <Table.Root size="sm" variant="outline" >
+          <Table.Root size="sm" variant="outline">
             <Table.Header px={4}>
               <Table.Row>
-                <Table.ColumnHeader textTransform={'uppercase'} maxW="400px">Product</Table.ColumnHeader>
-                <Table.ColumnHeader textTransform={'uppercase'} textAlign="center">
+                <Table.ColumnHeader textTransform={"uppercase"} maxW="400px">
+                  Product
+                </Table.ColumnHeader>
+                <Table.ColumnHeader
+                  textTransform={"uppercase"}
+                  textAlign="center"
+                >
                   Price
                 </Table.ColumnHeader>
-                <Table.ColumnHeader textTransform={'uppercase'} textAlign="center">
+                <Table.ColumnHeader
+                  textTransform={"uppercase"}
+                  textAlign="center"
+                >
                   Stock Status
                 </Table.ColumnHeader>
-                <Table.ColumnHeader textTransform={'uppercase'} textAlign="center">
+                <Table.ColumnHeader
+                  textTransform={"uppercase"}
+                  textAlign="center"
+                >
                   Actions
                 </Table.ColumnHeader>
               </Table.Row>

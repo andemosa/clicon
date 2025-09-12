@@ -2,6 +2,7 @@ import { useRef } from "react";
 import Slider from "react-slick";
 import { Box, Text, VStack, IconButton, Image } from "@chakra-ui/react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import type { Category } from ".";
 
 const PrevArrow = ({ onClick }: { onClick?: () => void }) => (
   <IconButton
@@ -48,12 +49,9 @@ const CategoryCarousel = ({
   selected,
   onSelect,
 }: {
-  categories: { label: string; img: string, subcategories: string[];
- }[];
-  selected: { label: string; img: string, subcategories: string[];
- };
-  onSelect: (cat: { label: string; img: string, subcategories: string[];
- }) => void;
+  categories: Category[];
+  selected: Category;
+  onSelect: (cat: Category) => void;
 }) => {
   const slider = useRef<Slider>(null);
 

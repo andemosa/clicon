@@ -43,6 +43,7 @@ const SignupForm = ({ switchToLogin }: { switchToLogin: () => void }) => {
         title: data.message,
         type: "success",
       });
+      switchToLogin()
     },
     onError: (err) => {
       toaster.create({

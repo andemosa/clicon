@@ -8,13 +8,10 @@ import {
   Box,
   Button,
   Badge,
-  Image
+  Image,
 } from "@chakra-ui/react";
 
 const TabSelector = ({
-  subcategories,
-  selected,
-  onSelect,
   products,
 }: {
   subcategories: string[];
@@ -58,7 +55,9 @@ const TabSelector = ({
             align={{ sm: "center" }}
             justifyContent={"space-between"}
           >
-            <Text fontWeight="bold" color={'gray.900'}>Featured Products</Text>
+            <Text fontWeight="bold" color={"gray.900"}>
+              Featured Products
+            </Text>
             <Tabs.List>
               <Tabs.Trigger value="members">Members</Tabs.Trigger>
               <Tabs.Trigger value="projects">Projects</Tabs.Trigger>

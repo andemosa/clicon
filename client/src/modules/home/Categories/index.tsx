@@ -1,11 +1,64 @@
-"use client";
 
 import { useState } from "react";
 import { Box } from "@chakra-ui/react";
 import CategorySelector from "./CategorySelector";
 import TabSelector from "./TabSelector";
 
-const products = {
+// 🔹 Define product + category types
+type Product = {
+  id: number;
+  name: string;
+  price: number;
+  img: string;
+  badge?: string;
+};
+
+type ProductCategories = {
+  "Computer & Laptop": {
+    All: Product[];
+    Monitors: Product[];
+    "Gaming Laptops": Product[];
+    Accessories: Product[];
+  };
+  SmartPhone: {
+    All: Product[];
+    Android: Product[];
+    iOS: Product[];
+  };
+  Headphones: {
+    All: Product[];
+    Wireless: Product[];
+    Wired: Product[];
+  };
+  Accessories: {
+    All: Product[];
+    Cables: Product[];
+    Keyboards: Product[];
+    Mice: Product[];
+    Chargers: Product[];
+  };
+  "Camera & Photo": {
+    All: Product[];
+    DSLR: Product[];
+    Lenses: Product[];
+  };
+  "TV & Homes": {
+    All: Product[];
+    "Smart TV": Product[];
+    Speakers: Product[];
+  };
+};
+
+export type CategoryKey = keyof ProductCategories;
+
+export type Category = {
+  label: CategoryKey;
+  img: string;
+  subcategories: string[];
+};
+
+// 🔹 Products (typed)
+const products: ProductCategories = {
   "Computer & Laptop": {
     All: [
       {
@@ -27,7 +80,6 @@ const products = {
     "Gaming Laptops": [],
     Accessories: [],
   },
-
   SmartPhone: {
     All: [
       {
@@ -47,7 +99,6 @@ const products = {
     ],
     iOS: [],
   },
-
   Headphones: {
     All: [
       {
@@ -68,7 +119,6 @@ const products = {
     ],
     Wired: [],
   },
-
   Accessories: {
     All: [
       {
@@ -91,13 +141,11 @@ const products = {
     Mice: [],
     Chargers: [],
   },
-
   "Camera & Photo": {
     All: [],
     DSLR: [],
     Lenses: [],
   },
-
   "TV & Homes": {
     All: [],
     "Smart TV": [],
@@ -105,7 +153,8 @@ const products = {
   },
 };
 
-const categories = [
+// 🔹 Category metadata
+const categories: Category[] = [
   {
     label: "Computer & Laptop",
     img: "/images/laptop.png",
@@ -139,12 +188,14 @@ const categories = [
 ];
 
 const Categories = () => {
-  const [selectedCategory, setSelectedCategory] = useState(categories[0]);
-  const [selectedSubcategory, setSelectedSubcategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState<Category>(categories[0]);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>("All");
 
-  // Get products directly from nested structure
+  // ✅ Strong typing for products lookup
   const filteredProducts =
-    products[selectedCategory.label]?.[selectedSubcategory] || [];
+    products[selectedCategory.label][
+      selectedSubcategory as keyof (typeof products)[typeof selectedCategory.label]
+    ] || [];
 
   return (
     <Box
@@ -160,7 +211,7 @@ const Categories = () => {
         selected={selectedCategory}
         onSelect={(cat) => {
           setSelectedCategory(cat);
-          setSelectedSubcategory("All"); // reset subcategory
+          setSelectedSubcategory("All");
         }}
       />
 

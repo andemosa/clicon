@@ -1,4 +1,5 @@
 import {
+  queryOptions,
   useMutation,
   useQuery,
   type UseMutationOptions,
@@ -52,6 +53,11 @@ export const useSignout = (
     ...options,
   });
 };
+
+export const profileQueryOptions = queryOptions<ProfileRes, ApiError>({
+  queryKey: queryKeys.getProfile,
+  queryFn: () => AuthService.profile(),
+});
 
 export const useProfileQuery = (
   options?: UseQueryOptions<ProfileRes, ApiError>

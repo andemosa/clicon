@@ -17,6 +17,7 @@ export const system = createSystem(defaultConfig, {
     tokens: {
       colors: {
         blue: {
+          50: { value: "#EAF6FE" },
           500: { value: "#2DA5F3" },
           700: { value: "#1B6392" },
         },
@@ -24,6 +25,7 @@ export const system = createSystem(defaultConfig, {
           500: { value: "#EE5858" },
         },
         orange: {
+          50: { value: "#FFF3EB" },
           500: { value: "#FA8232" },
         },
         yellow: {

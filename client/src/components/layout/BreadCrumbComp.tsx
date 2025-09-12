@@ -1,12 +1,10 @@
-import { Box, Breadcrumb, HStack } from "@chakra-ui/react";
-import { Fragment, type ReactNode } from "react";
+import { Box, Breadcrumb, HStack, chakra } from "@chakra-ui/react";
+import { Fragment } from "react";
+import { Link as RouterLink } from "@tanstack/react-router";
 
-type Crumb = {
-  label: string;
-  href?: string;
-  icon?: ReactNode;
-  isCurrent?: boolean;
-};
+import type { Crumb } from "./constants";
+
+const Link = chakra(RouterLink);
 
 interface CliconBreadcrumbProps {
   items: Crumb[];
@@ -35,7 +33,7 @@ const BreadCrumbComp = ({ items }: CliconBreadcrumbProps) => {
                     </HStack>
                   </Breadcrumb.CurrentLink>
                 ) : (
-                  <Breadcrumb.Link
+                  <Link
                     href={item.href}
                     _focus={{ boxShadow: "none", outline: "none" }}
                   >
@@ -43,7 +41,7 @@ const BreadCrumbComp = ({ items }: CliconBreadcrumbProps) => {
                       {item.icon}
                       <Box as="span">{item.label}</Box>
                     </HStack>
-                  </Breadcrumb.Link>
+                  </Link>
                 )}
               </Breadcrumb.Item>
               {idx < items.length - 1 && <Breadcrumb.Separator />}

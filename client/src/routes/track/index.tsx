@@ -1,5 +1,5 @@
 import Layout from "@/components/layout";
-import BreadCrumpComp from "@/components/layout/BreadCrumpComp";
+import BreadCrumbComp from "@/components/layout/BreadCrumbComp";
 import TrackOrderPage from "@/modules/track";
 import { createFileRoute } from "@tanstack/react-router";
 import { Home } from "lucide-react";
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/track/")({
 function RouteComponent() {
   return (
     <Layout>
-      <BreadCrumpComp
+      <BreadCrumbComp
         items={[
           { label: "Home", href: "/", icon: <Home size={14} /> },
           { label: "Track Order", isCurrent: true },

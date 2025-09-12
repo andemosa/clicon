@@ -31,9 +31,11 @@ interface FormValues {
 const LoginForm = ({
   switchToSignup,
   switchToForgotPassword,
+  closePopover
 }: {
   switchToSignup: () => void;
   switchToForgotPassword: () => void;
+  closePopover: () => void;
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const queryClient = useQueryClient();
@@ -55,6 +57,7 @@ const LoginForm = ({
       queryClient.invalidateQueries({
         queryKey: queryKeys.getProfile,
       });
+      closePopover()
     },
     onError: (err) => {
       toaster.create({
