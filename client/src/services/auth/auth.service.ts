@@ -2,7 +2,6 @@ import { Api } from "@/utils/api";
 
 import type {
   ApiError,
-  ProfileRes,
   SigninReq,
   SigninRes,
   SignupReq,
@@ -37,15 +36,6 @@ export class AuthService {
   static async signout(): Promise<SigninRes> {
     try {
       const res = await Api.postReq<SigninRes>(`/auth/signout`);
-      return res.data;
-    } catch (err) {
-      throw err as ApiError;
-    }
-  }
-
-  static async profile(): Promise<ProfileRes> {
-    try {
-      const res = await Api.getReq<ProfileRes>(`/auth/profile`);
       return res.data;
     } catch (err) {
       throw err as ApiError;

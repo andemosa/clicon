@@ -13,12 +13,17 @@ import {
 import { NotepadText, Package, Rocket } from "lucide-react";
 import { Link as RouterLink } from "@tanstack/react-router";
 
+import type { UserDashboardRes } from "@/types";
+
 const Link = chakra(RouterLink);
 
-const UserStats = () => {
+const UserStats = ({ data }: { data: UserDashboardRes }) => {
   return (
-        
-    <SimpleGrid columns={{ base: 1, sm: 2, lg: 3 }} gap={{ base: 4, xl: 6 }} color={'gray.900'}>
+    <SimpleGrid
+      columns={{ base: 1, sm: 2, lg: 3 }}
+      gap={{ base: 4, xl: 6 }}
+      color={"gray.900"}
+    >
       <Box border={"1px solid"} borderColor={"gray.100"} rounded="md">
         <Text
           fontSize="lg"
@@ -30,24 +35,25 @@ const UserStats = () => {
         </Text>
         <Separator w={"full"} />
         <Stack p={{ base: 2, sm: 4, lg: 6 }} gap={4}>
-          <Flex gap={2}>
+          <Flex gap={2} alignItems={"center"}>
             <Avatar.Root size="lg">
-              <Avatar.Fallback name="Segun Adebayo" />
-              <Avatar.Image src="https://bit.ly/sage-adebayo" />
+              <Avatar.Fallback name={`${data.firstName} ${data.lastName}`} />
+              <Avatar.Image src={data.avatar ?? undefined} />
             </Avatar.Root>
             <Stack gap={1}>
-              <Text>Name</Text>
-              <Text color={"gray.600"}>Email</Text>
+              <Text fontSize={"lg"} color={"gray.600"} fontWeight={600}>
+                {data?.firstName} {data?.lastName}
+              </Text>
             </Stack>
           </Flex>
           <Stack>
             <Flex>
               <Text>Email:</Text>
-              <Text color={"gray.600"}>email</Text>
+              <Text color={"gray.600"}>{data.email}</Text>
             </Flex>
             <Flex>
               <Text>Phone:</Text>
-              <Text color={"gray.600"}>phone</Text>
+              <Text color={"gray.600"}>{data.phone}</Text>
             </Flex>
           </Stack>
           <Link
@@ -91,50 +97,97 @@ const UserStats = () => {
           Billing address
         </Text>
         <Separator w={"full"} />
-        <Stack p={{ base: 2, sm: 4, lg: 6 }} gap={4}>
-          <Stack gap={1}>
-            <Text>Name</Text>
-            <Text color={"gray.600"}>Email</Text>
-          </Stack>
-          <Stack>
-            <Flex>
-              <Text>Email:</Text>
-              <Text color={"gray.600"}>email</Text>
-            </Flex>
-            <Flex>
-              <Text>Phone:</Text>
-              <Text color={"gray.600"}>phone</Text>
-            </Flex>
-          </Stack>
-          <Link
-            to={"/dashboard/settings"}
-            _hover={{
-              textDecoration: "none",
-            }}
-          >
-            <Button
-              size="md"
-              w={"max-content"}
-              textTransform="uppercase"
-              borderColor="blue.500"
-              bg={"transparent"}
-              color="blue.500"
-              fontWeight={700}
+        {data.billingAddress ? (
+          <Stack p={{ base: 2, sm: 4, lg: 6 }} gap={4}>
+            <Stack gap={1}>
+              <Text fontWeight={500}>
+                {data.billingAddress.firstName} {data.billingAddress.lastName}
+              </Text>
+              <Text color={"gray.600"}>
+                {data.billingAddress.addressLine1}, {data.billingAddress.city},{" "}
+                {data.billingAddress.state}, {data.billingAddress.country}
+              </Text>
+            </Stack>
+            <Stack>
+              <Flex>
+                <Text>Email:</Text>
+                <Text color={"gray.600"}>{data.billingAddress.email}</Text>
+              </Flex>
+              <Flex>
+                <Text>Phone:</Text>
+                <Text color={"gray.600"}>{data.billingAddress.phone}</Text>
+              </Flex>
+            </Stack>
+            <Link
+              to={"/dashboard/settings"}
               _hover={{
-                border: "blue.500",
-                bg: "transparent",
-                borderColor: "blue.500",
-              }}
-              _active={{
-                border: "blue.500",
-                bg: "transparent",
-                borderColor: "blue.500",
+                textDecoration: "none",
               }}
             >
-              Edit Address
-            </Button>
-          </Link>
-        </Stack>
+              <Button
+                size="md"
+                w={"max-content"}
+                textTransform="uppercase"
+                borderColor="blue.500"
+                bg={"transparent"}
+                color="blue.500"
+                fontWeight={700}
+                _hover={{
+                  border: "blue.500",
+                  bg: "transparent",
+                  borderColor: "blue.500",
+                }}
+                _active={{
+                  border: "blue.500",
+                  bg: "transparent",
+                  borderColor: "blue.500",
+                }}
+              >
+                Edit Address
+              </Button>
+            </Link>
+          </Stack>
+        ) : (
+          <Stack
+            align="center"
+            justify="center"
+            p={8}
+            gap={6}
+            textAlign={"center"}
+          >
+            <Text fontSize="md" color="gray.600">
+              You don’t have a billing address yet.
+            </Text>
+            <Link
+              to={"/dashboard/settings"}
+              _hover={{
+                textDecoration: "none",
+              }}
+            >
+              <Button
+                size="md"
+                w={"max-content"}
+                textTransform="uppercase"
+                borderColor="blue.500"
+                bg={"transparent"}
+                color="blue.500"
+                fontWeight={700}
+                _hover={{
+                  border: "blue.500",
+                  bg: "transparent",
+                  borderColor: "blue.500",
+                }}
+                _active={{
+                  border: "blue.500",
+                  bg: "transparent",
+                  borderColor: "blue.500",
+                }}
+              >
+                Add Address
+              </Button>
+            </Link>
+          </Stack>
+        )}
       </Box>
 
       <Flex
@@ -166,9 +219,9 @@ const UserStats = () => {
 
           <Stack gap={0} fontSize={"sm"}>
             <Text fontWeight={600} fontSize={"lg"}>
-              154
+              {data.totalOrders}
             </Text>
-            <Text color={'gray.700'}>Total Orders</Text>
+            <Text color={"gray.700"}>Total Orders</Text>
           </Stack>
         </Flex>
         <Flex
@@ -193,9 +246,9 @@ const UserStats = () => {
 
           <Stack gap={0} fontSize={"sm"}>
             <Text fontWeight={600} fontSize={"lg"}>
-              09
+              {data.pendingOrders}
             </Text>
-            <Text color={'gray.700'}>Pending Orders</Text>
+            <Text color={"gray.700"}>Pending Orders</Text>
           </Stack>
         </Flex>
         <Flex
@@ -220,9 +273,9 @@ const UserStats = () => {
 
           <Stack gap={0} fontSize={"sm"}>
             <Text fontWeight={600} fontSize={"lg"}>
-              149
+              {data.completedOrders}
             </Text>
-            <Text color={'gray.700'}>Completed Orders</Text>
+            <Text color={"gray.700"}>Completed Orders</Text>
           </Stack>
         </Flex>
       </Flex>

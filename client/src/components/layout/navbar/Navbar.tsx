@@ -39,7 +39,8 @@ import { Logo } from "../../icons/GeneralIcons";
 import DesktopMenu from "./DesktopMenu";
 import { toaster } from "@/components/ui/toaster";
 
-import { useProfileQuery, useSignout } from "@/services/auth/auth.hooks";
+import { useSignout } from "@/services/auth/auth.hooks";
+import { useProfileQuery } from "@/services/profile/profile.hooks";
 import { queryKeys } from "@/services/queryKeys";
 
 const links = [

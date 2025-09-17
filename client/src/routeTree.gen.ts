@@ -15,9 +15,11 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CompareRouteImport } from './routes/compare'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TrackIndexRouteImport } from './routes/track/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as TrackOrderIdRouteImport } from './routes/track/$orderId'
 import { Route as ProductsProductIdRouteImport } from './routes/products/$productId'
 import { Route as authVerifyEmailRouteImport } from './routes/(auth)/verify-email'
@@ -28,6 +30,10 @@ import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-p
 import { Route as DashboardSettingsIndexRouteImport } from './routes/dashboard/settings/index'
 import { Route as DashboardOrdersIndexRouteImport } from './routes/dashboard/orders/index'
 import { Route as DashboardHistoryIndexRouteImport } from './routes/dashboard/history/index'
+import { Route as AdminUsersIndexRouteImport } from './routes/admin/users/index'
+import { Route as AdminSettingsIndexRouteImport } from './routes/admin/settings/index'
+import { Route as AdminProductsIndexRouteImport } from './routes/admin/products/index'
+import { Route as AdminOrdersIndexRouteImport } from './routes/admin/orders/index'
 import { Route as DashboardOrdersOrderIdRouteImport } from './routes/dashboard/orders/$orderId'
 
 const WishlistRoute = WishlistRouteImport.update({
@@ -60,6 +66,11 @@ const CartRoute = CartRouteImport.update({
   path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -74,6 +85,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const TrackOrderIdRoute = TrackOrderIdRouteImport.update({
   id: '/track/$orderId',
@@ -125,6 +141,26 @@ const DashboardHistoryIndexRoute = DashboardHistoryIndexRouteImport.update({
   path: '/history/',
   getParentRoute: () => DashboardRoute,
 } as any)
+const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsIndexRoute = AdminSettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProductsIndexRoute = AdminProductsIndexRouteImport.update({
+  id: '/products/',
+  path: '/products/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOrdersIndexRoute = AdminOrdersIndexRouteImport.update({
+  id: '/orders/',
+  path: '/orders/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const DashboardOrdersOrderIdRoute = DashboardOrdersOrderIdRouteImport.update({
   id: '/orders/$orderId',
   path: '/orders/$orderId',
@@ -133,6 +169,7 @@ const DashboardOrdersOrderIdRoute = DashboardOrdersOrderIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/compare': typeof CompareRoute
@@ -146,9 +183,14 @@ export interface FileRoutesByFullPath {
   '/verify-email': typeof authVerifyEmailRoute
   '/products/$productId': typeof ProductsProductIdRoute
   '/track/$orderId': typeof TrackOrderIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/track': typeof TrackIndexRoute
   '/dashboard/orders/$orderId': typeof DashboardOrdersOrderIdRoute
+  '/admin/orders': typeof AdminOrdersIndexRoute
+  '/admin/products': typeof AdminProductsIndexRoute
+  '/admin/settings': typeof AdminSettingsIndexRoute
+  '/admin/users': typeof AdminUsersIndexRoute
   '/dashboard/history': typeof DashboardHistoryIndexRoute
   '/dashboard/orders': typeof DashboardOrdersIndexRoute
   '/dashboard/settings': typeof DashboardSettingsIndexRoute
@@ -167,9 +209,14 @@ export interface FileRoutesByTo {
   '/verify-email': typeof authVerifyEmailRoute
   '/products/$productId': typeof ProductsProductIdRoute
   '/track/$orderId': typeof TrackOrderIdRoute
+  '/admin': typeof AdminIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/track': typeof TrackIndexRoute
   '/dashboard/orders/$orderId': typeof DashboardOrdersOrderIdRoute
+  '/admin/orders': typeof AdminOrdersIndexRoute
+  '/admin/products': typeof AdminProductsIndexRoute
+  '/admin/settings': typeof AdminSettingsIndexRoute
+  '/admin/users': typeof AdminUsersIndexRoute
   '/dashboard/history': typeof DashboardHistoryIndexRoute
   '/dashboard/orders': typeof DashboardOrdersIndexRoute
   '/dashboard/settings': typeof DashboardSettingsIndexRoute
@@ -177,6 +224,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/compare': typeof CompareRoute
@@ -190,9 +238,14 @@ export interface FileRoutesById {
   '/(auth)/verify-email': typeof authVerifyEmailRoute
   '/products/$productId': typeof ProductsProductIdRoute
   '/track/$orderId': typeof TrackOrderIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/track/': typeof TrackIndexRoute
   '/dashboard/orders/$orderId': typeof DashboardOrdersOrderIdRoute
+  '/admin/orders/': typeof AdminOrdersIndexRoute
+  '/admin/products/': typeof AdminProductsIndexRoute
+  '/admin/settings/': typeof AdminSettingsIndexRoute
+  '/admin/users/': typeof AdminUsersIndexRoute
   '/dashboard/history/': typeof DashboardHistoryIndexRoute
   '/dashboard/orders/': typeof DashboardOrdersIndexRoute
   '/dashboard/settings/': typeof DashboardSettingsIndexRoute
@@ -201,6 +254,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/cart'
     | '/checkout'
     | '/compare'
@@ -214,9 +268,14 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/products/$productId'
     | '/track/$orderId'
+    | '/admin/'
     | '/dashboard/'
     | '/track'
     | '/dashboard/orders/$orderId'
+    | '/admin/orders'
+    | '/admin/products'
+    | '/admin/settings'
+    | '/admin/users'
     | '/dashboard/history'
     | '/dashboard/orders'
     | '/dashboard/settings'
@@ -235,15 +294,21 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/products/$productId'
     | '/track/$orderId'
+    | '/admin'
     | '/dashboard'
     | '/track'
     | '/dashboard/orders/$orderId'
+    | '/admin/orders'
+    | '/admin/products'
+    | '/admin/settings'
+    | '/admin/users'
     | '/dashboard/history'
     | '/dashboard/orders'
     | '/dashboard/settings'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/cart'
     | '/checkout'
     | '/compare'
@@ -257,9 +322,14 @@ export interface FileRouteTypes {
     | '/(auth)/verify-email'
     | '/products/$productId'
     | '/track/$orderId'
+    | '/admin/'
     | '/dashboard/'
     | '/track/'
     | '/dashboard/orders/$orderId'
+    | '/admin/orders/'
+    | '/admin/products/'
+    | '/admin/settings/'
+    | '/admin/users/'
     | '/dashboard/history/'
     | '/dashboard/orders/'
     | '/dashboard/settings/'
@@ -267,6 +337,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   CompareRoute: typeof CompareRoute
@@ -327,6 +398,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -347,6 +425,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/track/$orderId': {
       id: '/track/$orderId'
@@ -418,6 +503,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardHistoryIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/admin/users/': {
+      id: '/admin/users/'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings/': {
+      id: '/admin/settings/'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/products/': {
+      id: '/admin/products/'
+      path: '/products'
+      fullPath: '/admin/products'
+      preLoaderRoute: typeof AdminProductsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/orders/': {
+      id: '/admin/orders/'
+      path: '/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AdminOrdersIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/dashboard/orders/$orderId': {
       id: '/dashboard/orders/$orderId'
       path: '/orders/$orderId'
@@ -427,6 +540,24 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AdminRouteChildren {
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminOrdersIndexRoute: typeof AdminOrdersIndexRoute
+  AdminProductsIndexRoute: typeof AdminProductsIndexRoute
+  AdminSettingsIndexRoute: typeof AdminSettingsIndexRoute
+  AdminUsersIndexRoute: typeof AdminUsersIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminIndexRoute: AdminIndexRoute,
+  AdminOrdersIndexRoute: AdminOrdersIndexRoute,
+  AdminProductsIndexRoute: AdminProductsIndexRoute,
+  AdminSettingsIndexRoute: AdminSettingsIndexRoute,
+  AdminUsersIndexRoute: AdminUsersIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface DashboardRouteChildren {
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -450,6 +581,7 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   CompareRoute: CompareRoute,

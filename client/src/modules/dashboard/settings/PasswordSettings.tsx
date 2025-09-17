@@ -6,38 +6,20 @@ import {
   Text,
   Separator,
   InputGroup,
+  Spinner,
 } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-
 import { z } from "zod";
 
-const formSchema = z.object({
-  oldPassword: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters" }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters" })
-    .max(20, { message: "Password must not exceed 20 characters" })
-    .regex(/[A-Z]/, {
-      message: "Password must contain at least one uppercase letter",
-    })
-    .regex(/[a-z]/, {
-      message: "Password must contain at least one lowercase letter",
-    })
-    .regex(/[0-9]/, {
-      message: "Password must contain at least one number",
-    })
-    .regex(/[@$!%*?&]/, {
-      message: "Password must contain at least one special character",
-    }),
-  confirmPassword: z.string(),
-});
+import { toaster } from "@/components/ui/toaster";
 
-type FormValues = z.infer<typeof formSchema>;
+import { updatePasswordSchema } from "@/schemas/profile";
+import { useUpdatePassword } from "@/services/profile/profile.hooks";
+
+type FormValues = z.infer<typeof updatePasswordSchema>;
 
 const PasswordSettings = () => {
   const [showOldPassword, setShowOldPassword] = useState(false);
@@ -47,11 +29,35 @@ const PasswordSettings = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(updatePasswordSchema),
   });
-  const onSubmit = handleSubmit((data) => console.log(data));
+
+  const { mutate, isPending } = useUpdatePassword({
+    onSuccess: () => {
+      toaster.create({
+        title: "Password updated successfully",
+        type: "success",
+      });
+      reset()
+    },
+    onError: (err) => {
+      toaster.create({
+        title: err.message,
+        type: "error",
+      });
+    },
+  });
+
+  const onSubmit = handleSubmit((data) => {
+    mutate({
+      confirmPassword: data.confirmPassword,
+      currentPassword: data.oldPassword,
+      newPassword: data.password,
+    });
+  });
 
   return (
     <Stack
@@ -122,6 +128,8 @@ const PasswordSettings = () => {
           <Field.ErrorText>{errors.confirmPassword?.message}</Field.ErrorText>
         </Field.Root>
         <Button
+          type="submit"
+          disabled={isPending}
           size="md"
           w="max-content"
           textTransform="uppercase"
@@ -132,7 +140,7 @@ const PasswordSettings = () => {
           _active={{ bg: "orange.500" }}
           mt={2}
         >
-          Save Changes
+          {isPending ? <Spinner size="sm" /> : <>Save Changes</>}
         </Button>
       </Stack>
     </Stack>

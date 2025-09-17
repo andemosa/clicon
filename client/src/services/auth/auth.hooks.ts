@@ -1,17 +1,10 @@
-import {
-  queryOptions,
-  useMutation,
-  useQuery,
-  type UseMutationOptions,
-  type UseQueryOptions,
-} from "@tanstack/react-query";
+import { useMutation, type UseMutationOptions } from "@tanstack/react-query";
 
 import { AuthService } from "./auth.service";
 import { queryKeys } from "../queryKeys";
 
 import type {
   ApiError,
-  ProfileRes,
   SigninReq,
   SigninRes,
   SignupReq,
@@ -50,21 +43,6 @@ export const useSignout = (
     mutationFn: async () => {
       return await AuthService.signout();
     },
-    ...options,
-  });
-};
-
-export const profileQueryOptions = queryOptions<ProfileRes, ApiError>({
-  queryKey: queryKeys.getProfile,
-  queryFn: () => AuthService.profile(),
-});
-
-export const useProfileQuery = (
-  options?: UseQueryOptions<ProfileRes, ApiError>
-) => {
-  return useQuery<ProfileRes, ApiError>({
-    queryKey: queryKeys.getProfile,
-    queryFn: () => AuthService.profile(),
     ...options,
   });
 };

@@ -125,24 +125,7 @@ async function patchReq<TResponse, TBody = unknown>(
   }
 }
 
-async function putReq<TResponse, TBody = unknown>(
-  url: string,
-  params: TBody
-): Promise<AxiosResponse<TResponse>> {
-  try {
-    return await Http.put<TResponse, AxiosResponse<TResponse>, TBody>(
-      url,
-      params,
-      {
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-  } catch (err) {
-    throw transformError(err);
-  }
-}
-
-async function putReqWithFormdata<TResponse, TBody extends Record<string, any>>(
+async function patchReqWithFormdata<TResponse, TBody extends Record<string, any>>(
   url: string,
   params: TBody,
   headers: Record<string, string> = { "Content-Type": "multipart/form-data" }
@@ -159,7 +142,7 @@ async function putReqWithFormdata<TResponse, TBody extends Record<string, any>>(
   }
 
   try {
-    return await Http.put<TResponse, AxiosResponse<TResponse>>(url, formData, {
+    return await Http.patch<TResponse, AxiosResponse<TResponse>>(url, formData, {
       headers,
     });
   } catch (err) {
@@ -184,7 +167,6 @@ export const Api = {
   postReq,
   postReqWithFormdata,
   patchReq,
-  putReq,
-  putReqWithFormdata,
+  patchReqWithFormdata,
   deleteReq,
 };

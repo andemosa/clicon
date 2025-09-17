@@ -7,11 +7,14 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { AuthGuard } from '@nestjs/passport';
+
+import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
+
+import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDTO } from './dto/login.dto';
+
 import { RequestUser } from './types/request-user';
 
 @Controller('auth')
@@ -50,7 +53,9 @@ export class AuthController {
     if (!user) {
       throw new Error('User not found');
     }
-    return user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...safeUser } = user;
+    return safeUser;
   }
 
   @Post('signout')

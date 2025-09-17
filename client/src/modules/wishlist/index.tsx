@@ -14,7 +14,7 @@ import {
 import { CircleX, ArrowRightIcon, ShoppingCart } from "lucide-react";
 import { Link as RouterLink } from "@tanstack/react-router";
 
-import { useProfileQuery } from "@/services/auth/auth.hooks";
+import { useProfileQuery } from "@/services/profile/profile.hooks";
 
 const NavigateLink = chakra(RouterLink);
 

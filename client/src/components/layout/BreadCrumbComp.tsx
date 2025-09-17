@@ -10,9 +10,9 @@ interface CliconBreadcrumbProps {
   items: Crumb[];
 }
 
-const BreadCrumbComp = ({ items }: CliconBreadcrumbProps) => {
+const BreadCrumbComp = ({ items = [] }: CliconBreadcrumbProps) => {
   return (
-    <Box w="full" bg="gray.50">
+    <Box w="full" bg="gray.50" display={{ base: "none", sm: "block" }}>
       <Breadcrumb.Root
         px={{ base: 6, lg: 12 }}
         py={{ base: 4 }}

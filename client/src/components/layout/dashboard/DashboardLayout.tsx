@@ -1,12 +1,12 @@
 import type { PropsWithChildren } from "react";
 import { Flex } from "@chakra-ui/react";
+import { useMatches } from "@tanstack/react-router";
 
 import BreadCrumbComp from "../BreadCrumbComp";
 import Layout from "..";
 import Sidebar from "./Sidebar";
 
 import type { Crumb } from "../constants";
-import { useMatches } from "@tanstack/react-router";
 
 type DashboardLayoutProps = PropsWithChildren & {
   items?: Crumb[];

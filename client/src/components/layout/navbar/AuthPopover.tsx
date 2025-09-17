@@ -28,7 +28,8 @@ import {
   SIGNUP_FORM,
 } from "../constants";
 
-import { useProfileQuery, useSignout } from "@/services/auth/auth.hooks";
+import { useSignout } from "@/services/auth/auth.hooks";
+import { useProfileQuery } from "@/services/profile/profile.hooks";
 import { queryKeys } from "@/services/queryKeys";
 
 const Link = chakra(RouterLink);
