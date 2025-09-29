@@ -92,9 +92,7 @@ async function postReqWithFormdata<
   for (const [key, value] of Object.entries(params)) {
     if (Array.isArray(value)) {
       value.forEach((v, index) => formData.append(`${key}[${index}]`, v));
-    } else if (
-      !["", "null", "undefined", null, undefined].includes(value as any)
-    ) {
+    } else if (!["null", "undefined", null, undefined].includes(value as any)) {
       formData.append(key, value as any);
     }
   }
@@ -125,7 +123,10 @@ async function patchReq<TResponse, TBody = unknown>(
   }
 }
 
-async function patchReqWithFormdata<TResponse, TBody extends Record<string, any>>(
+async function patchReqWithFormdata<
+  TResponse,
+  TBody extends Record<string, any>,
+>(
   url: string,
   params: TBody,
   headers: Record<string, string> = { "Content-Type": "multipart/form-data" }
@@ -134,17 +135,19 @@ async function patchReqWithFormdata<TResponse, TBody extends Record<string, any>
   for (const [key, value] of Object.entries(params)) {
     if (Array.isArray(value)) {
       value.forEach((v, index) => formData.append(`${key}[${index}]`, v));
-    } else if (
-      !["", "null", "undefined", null, undefined].includes(value as any)
-    ) {
+    } else if (!["null", "undefined", null, undefined].includes(value as any)) {
       formData.append(key, value as any);
     }
   }
 
   try {
-    return await Http.patch<TResponse, AxiosResponse<TResponse>>(url, formData, {
-      headers,
-    });
+    return await Http.patch<TResponse, AxiosResponse<TResponse>>(
+      url,
+      formData,
+      {
+        headers,
+      }
+    );
   } catch (err) {
     throw transformError(err);
   }

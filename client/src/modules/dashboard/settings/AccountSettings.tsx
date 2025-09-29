@@ -27,7 +27,7 @@ import { toaster } from "@/components/ui/toaster";
 import { useUpdateProfile } from "@/services/profile/profile.hooks";
 import { queryKeys } from "@/services/queryKeys";
 
-import { updateProfileSchema } from "@/schemas/profile";
+import { updateProfileSchema } from "@/schemas";
 import type { UserProfileRes } from "@/types";
 
 type FormValues = z.infer<typeof updateProfileSchema>;

@@ -11,6 +11,8 @@ import {
   LogOut,
   ShoppingBasket,
   Users,
+  Folders,
+  Tags,
 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -32,6 +34,18 @@ const links = [
     name: "Products",
     href: "/admin/products",
     icon: <ShoppingBasket />,
+    exact: false,
+  },
+  {
+    name: "Categories",
+    href: "/admin/categories",
+    icon: <Folders />,
+    exact: false,
+  },
+  {
+    name: "Tags",
+    href: "/admin/tags",
+    icon: <Tags />,
     exact: false,
   },
   {
@@ -93,7 +107,7 @@ const Sidebar = () => {
       borderRadius="md"
       display={{ base: "none", md: "flex" }}
       minW={{ base: "200px", md: "220px", lg: "240px" }}
-      maxH={"350px"}
+      maxH={"450px"}
     >
       {links.map(({ href, icon, name, exact }) => {
         const isActive = exact ? pathname === href : pathname.startsWith(href);

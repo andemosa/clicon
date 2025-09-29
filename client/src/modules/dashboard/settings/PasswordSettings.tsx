@@ -16,7 +16,7 @@ import { z } from "zod";
 
 import { toaster } from "@/components/ui/toaster";
 
-import { updatePasswordSchema } from "@/schemas/profile";
+import { updatePasswordSchema } from "@/schemas";
 import { useUpdatePassword } from "@/services/profile/profile.hooks";
 
 type FormValues = z.infer<typeof updatePasswordSchema>;

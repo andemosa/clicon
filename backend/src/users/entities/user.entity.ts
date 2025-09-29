@@ -1,4 +1,6 @@
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
@@ -68,4 +70,10 @@ export class User {
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  normalizeEmail() {
+    this.email = this.email.toLowerCase().trim();
+  }
 }

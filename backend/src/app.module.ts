@@ -6,10 +6,15 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { OpenModule } from './open/open.module';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      // load: [configuration],
+      // validationSchema: configValidationSchema,
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => ({
@@ -28,6 +33,7 @@ import { OpenModule } from './open/open.module';
     UsersModule,
     CloudinaryModule,
     OpenModule,
+    ProductsModule,
   ],
 })
 export class AppModule {}

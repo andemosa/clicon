@@ -19,7 +19,7 @@ export class CloudinaryService {
         },
         (error, result) => {
           if (error) {
-            return reject(new Error(error.message as string));
+            return reject(new Error(error.message));
           }
           if (result) resolve(result);
         },

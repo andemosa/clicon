@@ -1,6 +1,8 @@
 export * from "./auth";
 export * from "./profile";
 export * from "./open";
+export * from "./categories";
+export * from "./tag";
 
 type ApiError = {
   message: string; // user-friendly message

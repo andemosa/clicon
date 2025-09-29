@@ -31,10 +31,16 @@ import { Route as DashboardSettingsIndexRouteImport } from './routes/dashboard/s
 import { Route as DashboardOrdersIndexRouteImport } from './routes/dashboard/orders/index'
 import { Route as DashboardHistoryIndexRouteImport } from './routes/dashboard/history/index'
 import { Route as AdminUsersIndexRouteImport } from './routes/admin/users/index'
+import { Route as AdminTagsIndexRouteImport } from './routes/admin/tags/index'
 import { Route as AdminSettingsIndexRouteImport } from './routes/admin/settings/index'
 import { Route as AdminProductsIndexRouteImport } from './routes/admin/products/index'
 import { Route as AdminOrdersIndexRouteImport } from './routes/admin/orders/index'
+import { Route as AdminCategoriesIndexRouteImport } from './routes/admin/categories/index'
 import { Route as DashboardOrdersOrderIdRouteImport } from './routes/dashboard/orders/$orderId'
+import { Route as AdminProductsNewIndexRouteImport } from './routes/admin/products/new/index'
+import { Route as AdminCategoriesNewIndexRouteImport } from './routes/admin/categories/new/index'
+import { Route as AdminCategoriesSlugProductsRouteImport } from './routes/admin/categories/$slug/products'
+import { Route as AdminCategoriesSlugEditRouteImport } from './routes/admin/categories/$slug/edit'
 
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
@@ -146,6 +152,11 @@ const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
   path: '/users/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminTagsIndexRoute = AdminTagsIndexRouteImport.update({
+  id: '/tags/',
+  path: '/tags/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSettingsIndexRoute = AdminSettingsIndexRouteImport.update({
   id: '/settings/',
   path: '/settings/',
@@ -161,10 +172,36 @@ const AdminOrdersIndexRoute = AdminOrdersIndexRouteImport.update({
   path: '/orders/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminCategoriesIndexRoute = AdminCategoriesIndexRouteImport.update({
+  id: '/categories/',
+  path: '/categories/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const DashboardOrdersOrderIdRoute = DashboardOrdersOrderIdRouteImport.update({
   id: '/orders/$orderId',
   path: '/orders/$orderId',
   getParentRoute: () => DashboardRoute,
+} as any)
+const AdminProductsNewIndexRoute = AdminProductsNewIndexRouteImport.update({
+  id: '/products/new/',
+  path: '/products/new/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCategoriesNewIndexRoute = AdminCategoriesNewIndexRouteImport.update({
+  id: '/categories/new/',
+  path: '/categories/new/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCategoriesSlugProductsRoute =
+  AdminCategoriesSlugProductsRouteImport.update({
+    id: '/categories/$slug/products',
+    path: '/categories/$slug/products',
+    getParentRoute: () => AdminRoute,
+  } as any)
+const AdminCategoriesSlugEditRoute = AdminCategoriesSlugEditRouteImport.update({
+  id: '/categories/$slug/edit',
+  path: '/categories/$slug/edit',
+  getParentRoute: () => AdminRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -187,13 +224,19 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/track': typeof TrackIndexRoute
   '/dashboard/orders/$orderId': typeof DashboardOrdersOrderIdRoute
+  '/admin/categories': typeof AdminCategoriesIndexRoute
   '/admin/orders': typeof AdminOrdersIndexRoute
   '/admin/products': typeof AdminProductsIndexRoute
   '/admin/settings': typeof AdminSettingsIndexRoute
+  '/admin/tags': typeof AdminTagsIndexRoute
   '/admin/users': typeof AdminUsersIndexRoute
   '/dashboard/history': typeof DashboardHistoryIndexRoute
   '/dashboard/orders': typeof DashboardOrdersIndexRoute
   '/dashboard/settings': typeof DashboardSettingsIndexRoute
+  '/admin/categories/$slug/edit': typeof AdminCategoriesSlugEditRoute
+  '/admin/categories/$slug/products': typeof AdminCategoriesSlugProductsRoute
+  '/admin/categories/new': typeof AdminCategoriesNewIndexRoute
+  '/admin/products/new': typeof AdminProductsNewIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -213,13 +256,19 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/track': typeof TrackIndexRoute
   '/dashboard/orders/$orderId': typeof DashboardOrdersOrderIdRoute
+  '/admin/categories': typeof AdminCategoriesIndexRoute
   '/admin/orders': typeof AdminOrdersIndexRoute
   '/admin/products': typeof AdminProductsIndexRoute
   '/admin/settings': typeof AdminSettingsIndexRoute
+  '/admin/tags': typeof AdminTagsIndexRoute
   '/admin/users': typeof AdminUsersIndexRoute
   '/dashboard/history': typeof DashboardHistoryIndexRoute
   '/dashboard/orders': typeof DashboardOrdersIndexRoute
   '/dashboard/settings': typeof DashboardSettingsIndexRoute
+  '/admin/categories/$slug/edit': typeof AdminCategoriesSlugEditRoute
+  '/admin/categories/$slug/products': typeof AdminCategoriesSlugProductsRoute
+  '/admin/categories/new': typeof AdminCategoriesNewIndexRoute
+  '/admin/products/new': typeof AdminProductsNewIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -242,13 +291,19 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/track/': typeof TrackIndexRoute
   '/dashboard/orders/$orderId': typeof DashboardOrdersOrderIdRoute
+  '/admin/categories/': typeof AdminCategoriesIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/products/': typeof AdminProductsIndexRoute
   '/admin/settings/': typeof AdminSettingsIndexRoute
+  '/admin/tags/': typeof AdminTagsIndexRoute
   '/admin/users/': typeof AdminUsersIndexRoute
   '/dashboard/history/': typeof DashboardHistoryIndexRoute
   '/dashboard/orders/': typeof DashboardOrdersIndexRoute
   '/dashboard/settings/': typeof DashboardSettingsIndexRoute
+  '/admin/categories/$slug/edit': typeof AdminCategoriesSlugEditRoute
+  '/admin/categories/$slug/products': typeof AdminCategoriesSlugProductsRoute
+  '/admin/categories/new/': typeof AdminCategoriesNewIndexRoute
+  '/admin/products/new/': typeof AdminProductsNewIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -272,13 +327,19 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/track'
     | '/dashboard/orders/$orderId'
+    | '/admin/categories'
     | '/admin/orders'
     | '/admin/products'
     | '/admin/settings'
+    | '/admin/tags'
     | '/admin/users'
     | '/dashboard/history'
     | '/dashboard/orders'
     | '/dashboard/settings'
+    | '/admin/categories/$slug/edit'
+    | '/admin/categories/$slug/products'
+    | '/admin/categories/new'
+    | '/admin/products/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -298,13 +359,19 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/track'
     | '/dashboard/orders/$orderId'
+    | '/admin/categories'
     | '/admin/orders'
     | '/admin/products'
     | '/admin/settings'
+    | '/admin/tags'
     | '/admin/users'
     | '/dashboard/history'
     | '/dashboard/orders'
     | '/dashboard/settings'
+    | '/admin/categories/$slug/edit'
+    | '/admin/categories/$slug/products'
+    | '/admin/categories/new'
+    | '/admin/products/new'
   id:
     | '__root__'
     | '/'
@@ -326,13 +393,19 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/track/'
     | '/dashboard/orders/$orderId'
+    | '/admin/categories/'
     | '/admin/orders/'
     | '/admin/products/'
     | '/admin/settings/'
+    | '/admin/tags/'
     | '/admin/users/'
     | '/dashboard/history/'
     | '/dashboard/orders/'
     | '/dashboard/settings/'
+    | '/admin/categories/$slug/edit'
+    | '/admin/categories/$slug/products'
+    | '/admin/categories/new/'
+    | '/admin/products/new/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -510,6 +583,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/tags/': {
+      id: '/admin/tags/'
+      path: '/tags'
+      fullPath: '/admin/tags'
+      preLoaderRoute: typeof AdminTagsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/settings/': {
       id: '/admin/settings/'
       path: '/settings'
@@ -531,6 +611,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrdersIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/categories/': {
+      id: '/admin/categories/'
+      path: '/categories'
+      fullPath: '/admin/categories'
+      preLoaderRoute: typeof AdminCategoriesIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/dashboard/orders/$orderId': {
       id: '/dashboard/orders/$orderId'
       path: '/orders/$orderId'
@@ -538,23 +625,63 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardOrdersOrderIdRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/admin/products/new/': {
+      id: '/admin/products/new/'
+      path: '/products/new'
+      fullPath: '/admin/products/new'
+      preLoaderRoute: typeof AdminProductsNewIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/categories/new/': {
+      id: '/admin/categories/new/'
+      path: '/categories/new'
+      fullPath: '/admin/categories/new'
+      preLoaderRoute: typeof AdminCategoriesNewIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/categories/$slug/products': {
+      id: '/admin/categories/$slug/products'
+      path: '/categories/$slug/products'
+      fullPath: '/admin/categories/$slug/products'
+      preLoaderRoute: typeof AdminCategoriesSlugProductsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/categories/$slug/edit': {
+      id: '/admin/categories/$slug/edit'
+      path: '/categories/$slug/edit'
+      fullPath: '/admin/categories/$slug/edit'
+      preLoaderRoute: typeof AdminCategoriesSlugEditRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
 interface AdminRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminCategoriesIndexRoute: typeof AdminCategoriesIndexRoute
   AdminOrdersIndexRoute: typeof AdminOrdersIndexRoute
   AdminProductsIndexRoute: typeof AdminProductsIndexRoute
   AdminSettingsIndexRoute: typeof AdminSettingsIndexRoute
+  AdminTagsIndexRoute: typeof AdminTagsIndexRoute
   AdminUsersIndexRoute: typeof AdminUsersIndexRoute
+  AdminCategoriesSlugEditRoute: typeof AdminCategoriesSlugEditRoute
+  AdminCategoriesSlugProductsRoute: typeof AdminCategoriesSlugProductsRoute
+  AdminCategoriesNewIndexRoute: typeof AdminCategoriesNewIndexRoute
+  AdminProductsNewIndexRoute: typeof AdminProductsNewIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
+  AdminCategoriesIndexRoute: AdminCategoriesIndexRoute,
   AdminOrdersIndexRoute: AdminOrdersIndexRoute,
   AdminProductsIndexRoute: AdminProductsIndexRoute,
   AdminSettingsIndexRoute: AdminSettingsIndexRoute,
+  AdminTagsIndexRoute: AdminTagsIndexRoute,
   AdminUsersIndexRoute: AdminUsersIndexRoute,
+  AdminCategoriesSlugEditRoute: AdminCategoriesSlugEditRoute,
+  AdminCategoriesSlugProductsRoute: AdminCategoriesSlugProductsRoute,
+  AdminCategoriesNewIndexRoute: AdminCategoriesNewIndexRoute,
+  AdminProductsNewIndexRoute: AdminProductsNewIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)

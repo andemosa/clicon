@@ -24,7 +24,7 @@ import { useUpdateAddress } from "@/services/profile/profile.hooks";
 import { useCountriesQuery } from "@/services/open/open.hooks";
 import { queryKeys } from "@/services/queryKeys";
 
-import { updateAddressSchema } from "@/schemas/profile";
+import { updateAddressSchema } from "@/schemas";
 import type { AddressType, UserProfileRes } from "@/types";
 
 type FormValues = z.infer<typeof updateAddressSchema>;
