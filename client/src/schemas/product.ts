@@ -2,16 +2,17 @@ import { z } from "zod";
 
 export const newProductSchema = z
   .object({
-    active: z.boolean(),
-    name: z.string().min(1, "name is required"),
+    name: z.string().min(1, "Name is required"),
     description: z.string(),
-    brand: z.string(),
-    parent: z.string(),
+    parent: z.string().min(1, "Category is required"),
 
-    price: z.number().min(0, "Price must be at least 0"),
-    stock: z.number().min(0, "Stock must be at least 0"),
-    discountType: z.enum(["percentage", "fixed"]).optional(),
-    discountValue: z.number().optional().or(z.nan()),
+    price: z.coerce.number().min(1, "Price must be at least 1"),
+    stock: z.coerce.number().min(1, "Stock must be at least 1"),
+    discountType: z
+      .union([z.enum(["percentage", "fixed"]), z.literal("")])
+      .optional(),
+
+    discountValue: z.coerce.number().optional().or(z.nan()),
   })
   .refine(
     (data) => {
@@ -32,9 +33,11 @@ export const newProductSchema = z
       return true;
     },
     {
-      message: "Invalid discount value",
+      message: "Invalid discount value, discount can not be greater than price or less than zero",
       path: ["discountValue"],
-    }
+    },
   );
 
-export type newProductFormData = z.infer<typeof newProductSchema>;
+export type newProductFormData = z.input<typeof newProductSchema>;
+// type FormInput = z.input<typeof newProductSchema>;
+// type FormOutput = z.output<typeof newProductSchema>;

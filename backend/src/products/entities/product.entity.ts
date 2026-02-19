@@ -8,11 +8,15 @@ import {
   JoinTable,
   OneToMany,
   Index,
+  BeforeInsert,
+  BeforeUpdate,
+  ManyToOne,
+  JoinColumn,
+  OneToOne,
 } from 'typeorm';
+
 import { Category } from './category.entity';
-import { ProductVariant } from './product-variant.entity';
 import { Tag } from './tag.entity';
-import { ProductImage } from './product-image.entity';
 
 @Entity('products')
 @Index(['slug'], { unique: true })
@@ -20,17 +24,40 @@ export class Product {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  /* =====================
+     Core Product Fields
+  ====================== */
+
+  @Index()
   @Column()
   name: string;
 
   @Column({ nullable: true })
   description: string;
 
+  @Index()
   @Column({ nullable: true })
   brand: string;
 
+  @Index('IDX_ACTIVE_PRODUCTS', { where: '"isActive" = true' })
   @Column({ default: true })
   isActive: boolean;
+
+  @Column({ type: 'numeric', precision: 12, scale: 2 })
+  price: number;
+
+  @Column({ type: 'int', default: 0 })
+  stock: number;
+
+  @Column({
+    type: 'enum',
+    enum: ['percentage', 'fixed'],
+    nullable: true,
+  })
+  discountType?: 'percentage' | 'fixed';
+
+  @Column({ type: 'numeric', precision: 12, scale: 2, nullable: true })
+  discountValue?: number;
 
   @Column({ type: 'float', default: 0 })
   averageRating: number;
@@ -38,22 +65,29 @@ export class Product {
   @Column({ type: 'int', default: 0 })
   salesCount: number;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   slug: string;
 
-  @Column({ type: 'jsonb', nullable: true })
-  metadata?: Record<string, any>;
+  @Column({ nullable: true })
+  image: string;
 
-  // Relationships
-  @ManyToMany(() => Category, (category) => category.products)
-  @JoinTable({
-    name: 'product_categories',
-    joinColumn: { name: 'productId', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'categoryId', referencedColumnName: 'id' },
+  @Column({ nullable: true })
+  imageId: string;
+
+  /* =====================
+     Relationships
+  ====================== */
+
+  @ManyToOne(() => Category, (category) => category.products, {
+    nullable: false,
+    onDelete: 'CASCADE',
   })
-  categories: Category[];
+  category: Category;
 
-  @ManyToMany(() => Tag, (tag) => tag.products, { cascade: true })
+  @ManyToMany(() => Tag, (tag) => tag.products, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   @JoinTable({
     name: 'product_tags',
     joinColumn: { name: 'productId', referencedColumnName: 'id' },
@@ -61,13 +95,21 @@ export class Product {
   })
   tags: Tag[];
 
-  @OneToMany(() => ProductVariant, (variant) => variant.product, {
-    cascade: true,
-  })
-  variants: ProductVariant[];
+  /* =====================
+     Hooks
+  ====================== */
 
-  @OneToMany(() => ProductImage, (image) => image.product, { cascade: true })
-  images: ProductImage[];
+  @BeforeInsert()
+  @BeforeUpdate()
+  normalizeSlug() {
+    if (this.slug) {
+      this.slug = this.slug.toLowerCase().trim();
+    }
+  }
+
+  /* =====================
+     Timestamps
+  ====================== */
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;

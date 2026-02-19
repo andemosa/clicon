@@ -39,6 +39,7 @@ import { Route as AdminCategoriesIndexRouteImport } from './routes/admin/categor
 import { Route as DashboardOrdersOrderIdRouteImport } from './routes/dashboard/orders/$orderId'
 import { Route as AdminProductsNewIndexRouteImport } from './routes/admin/products/new/index'
 import { Route as AdminCategoriesNewIndexRouteImport } from './routes/admin/categories/new/index'
+import { Route as AdminProductsSlugEditRouteImport } from './routes/admin/products/$slug/edit'
 import { Route as AdminCategoriesSlugProductsRouteImport } from './routes/admin/categories/$slug/products'
 import { Route as AdminCategoriesSlugEditRouteImport } from './routes/admin/categories/$slug/edit'
 
@@ -192,6 +193,11 @@ const AdminCategoriesNewIndexRoute = AdminCategoriesNewIndexRouteImport.update({
   path: '/categories/new/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminProductsSlugEditRoute = AdminProductsSlugEditRouteImport.update({
+  id: '/products/$slug/edit',
+  path: '/products/$slug/edit',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCategoriesSlugProductsRoute =
   AdminCategoriesSlugProductsRouteImport.update({
     id: '/categories/$slug/products',
@@ -235,6 +241,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/settings': typeof DashboardSettingsIndexRoute
   '/admin/categories/$slug/edit': typeof AdminCategoriesSlugEditRoute
   '/admin/categories/$slug/products': typeof AdminCategoriesSlugProductsRoute
+  '/admin/products/$slug/edit': typeof AdminProductsSlugEditRoute
   '/admin/categories/new': typeof AdminCategoriesNewIndexRoute
   '/admin/products/new': typeof AdminProductsNewIndexRoute
 }
@@ -267,6 +274,7 @@ export interface FileRoutesByTo {
   '/dashboard/settings': typeof DashboardSettingsIndexRoute
   '/admin/categories/$slug/edit': typeof AdminCategoriesSlugEditRoute
   '/admin/categories/$slug/products': typeof AdminCategoriesSlugProductsRoute
+  '/admin/products/$slug/edit': typeof AdminProductsSlugEditRoute
   '/admin/categories/new': typeof AdminCategoriesNewIndexRoute
   '/admin/products/new': typeof AdminProductsNewIndexRoute
 }
@@ -302,6 +310,7 @@ export interface FileRoutesById {
   '/dashboard/settings/': typeof DashboardSettingsIndexRoute
   '/admin/categories/$slug/edit': typeof AdminCategoriesSlugEditRoute
   '/admin/categories/$slug/products': typeof AdminCategoriesSlugProductsRoute
+  '/admin/products/$slug/edit': typeof AdminProductsSlugEditRoute
   '/admin/categories/new/': typeof AdminCategoriesNewIndexRoute
   '/admin/products/new/': typeof AdminProductsNewIndexRoute
 }
@@ -338,6 +347,7 @@ export interface FileRouteTypes {
     | '/dashboard/settings'
     | '/admin/categories/$slug/edit'
     | '/admin/categories/$slug/products'
+    | '/admin/products/$slug/edit'
     | '/admin/categories/new'
     | '/admin/products/new'
   fileRoutesByTo: FileRoutesByTo
@@ -370,6 +380,7 @@ export interface FileRouteTypes {
     | '/dashboard/settings'
     | '/admin/categories/$slug/edit'
     | '/admin/categories/$slug/products'
+    | '/admin/products/$slug/edit'
     | '/admin/categories/new'
     | '/admin/products/new'
   id:
@@ -404,6 +415,7 @@ export interface FileRouteTypes {
     | '/dashboard/settings/'
     | '/admin/categories/$slug/edit'
     | '/admin/categories/$slug/products'
+    | '/admin/products/$slug/edit'
     | '/admin/categories/new/'
     | '/admin/products/new/'
   fileRoutesById: FileRoutesById
@@ -639,6 +651,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriesNewIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/products/$slug/edit': {
+      id: '/admin/products/$slug/edit'
+      path: '/products/$slug/edit'
+      fullPath: '/admin/products/$slug/edit'
+      preLoaderRoute: typeof AdminProductsSlugEditRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/categories/$slug/products': {
       id: '/admin/categories/$slug/products'
       path: '/categories/$slug/products'
@@ -666,6 +685,7 @@ interface AdminRouteChildren {
   AdminUsersIndexRoute: typeof AdminUsersIndexRoute
   AdminCategoriesSlugEditRoute: typeof AdminCategoriesSlugEditRoute
   AdminCategoriesSlugProductsRoute: typeof AdminCategoriesSlugProductsRoute
+  AdminProductsSlugEditRoute: typeof AdminProductsSlugEditRoute
   AdminCategoriesNewIndexRoute: typeof AdminCategoriesNewIndexRoute
   AdminProductsNewIndexRoute: typeof AdminProductsNewIndexRoute
 }
@@ -680,6 +700,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminUsersIndexRoute: AdminUsersIndexRoute,
   AdminCategoriesSlugEditRoute: AdminCategoriesSlugEditRoute,
   AdminCategoriesSlugProductsRoute: AdminCategoriesSlugProductsRoute,
+  AdminProductsSlugEditRoute: AdminProductsSlugEditRoute,
   AdminCategoriesNewIndexRoute: AdminCategoriesNewIndexRoute,
   AdminProductsNewIndexRoute: AdminProductsNewIndexRoute,
 }

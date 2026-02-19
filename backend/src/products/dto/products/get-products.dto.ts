@@ -1,28 +1,43 @@
-import { IsInt, IsOptional, IsString, IsArray, IsNumber, ValidateNested } from 'class-validator';
+import {
+  IsInt,
+  IsOptional,
+  IsString,
+  IsArray,
+  IsNumber,
+  IsEnum,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class AttributeFilterDto {
-  @IsString()
-  attributeName: string;
+export enum ProductSortBy {
+  CREATED_AT = 'createdAt',
+  PRICE = 'price',
+  RATING = 'averageRating',
+  SALES = 'salesCount',
+}
 
-  @IsString()
-  value: string;
+export enum SortOrder {
+  ASC = 'ASC',
+  DESC = 'DESC',
 }
 
 export class GetProductsDto {
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  page?: number;
+  page?: number = 1;
 
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  limit?: number;
+  limit?: number = 20;
 
   @IsOptional()
-  @IsString()
-  sort?: string;
+  @IsEnum(ProductSortBy)
+  sortBy?: ProductSortBy = ProductSortBy.CREATED_AT;
+
+  @IsOptional()
+  @IsEnum(SortOrder)
+  sortOrder?: SortOrder = SortOrder.DESC;
 
   @IsOptional()
   @IsString()
@@ -48,12 +63,6 @@ export class GetProductsDto {
   maxPrice?: number;
 
   @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => AttributeFilterDto)
-  attributes?: AttributeFilterDto[];
-
-  @IsOptional()
   @IsString()
-  q?: string;
+  search?: string;
 }

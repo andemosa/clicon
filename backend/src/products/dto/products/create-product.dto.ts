@@ -1,34 +1,51 @@
-import { IsString, IsOptional, IsArray, ValidateNested, ArrayMaxSize, IsUUID, IsNotEmpty } from 'class-validator';
-import { Type } from 'class-transformer';
-import { CreateVariantDto } from './create-variant.dto';
+import { IsString, IsOptional, IsBoolean, IsNumber, Min, IsUUID, IsEnum, IsArray, IsInt } from 'class-validator';
+import { Transform } from 'class-transformer';
+
+enum DiscountType {
+  PERCENTAGE = 'percentage',
+  FIXED = 'fixed',
+}
 
 export class CreateProductDto {
-  @IsString()
+  @IsString({ message: 'Product name is required and must be a string' })
   name: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'Description must be a string' })
   description?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'Brand must be a string' })
   brand?: string;
 
   @IsOptional()
-  @IsUUID('all', { each: true })
-  categoryIds?: string[];
+  @IsBoolean({ message: 'isActive must be a boolean value' })
+  isActive?: boolean;
 
-  @IsArray()
-  @ArrayMaxSize(5, { message: 'Maximum 5 tags allowed' })
+  @IsNumber({}, { message: 'Price must be a number' })
+  @Min(1, { message: 'Price must be at least 1' })
+  price: number;
+
   @IsOptional()
-  tagIds?: string[]; // admin can pass existing tag ids
+  @IsInt({ message: 'Stock must be an integer number' })
+  @Min(1, { message: 'Stock must be at least 1' })
+  stock?: number;
 
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateVariantDto)
-  @IsNotEmpty()
-  variants: CreateVariantDto[];
+  @IsOptional()
+  @IsEnum(DiscountType, { message: 'Discount type must be either "percentage" or "fixed"' })
+  discountType?: DiscountType;
 
-  // optional metadata
-  metadata?: any;
+  @IsOptional()
+  @IsNumber({}, { message: 'Discount value must be a number' })
+  @Min(0, { message: 'Discount value must be at least 0' })
+  discountValue?: number;
+
+  @IsUUID('4', { message: 'Select a valid category' })
+  categoryId: string;
+
+  @IsOptional()
+  @IsArray({ message: 'Invalid array of tags' })
+  @IsUUID('4', { each: true, message: 'Each tag must be a valid id' })
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  tagIds?: string[];
 }

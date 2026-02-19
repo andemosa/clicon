@@ -39,7 +39,6 @@ const VerifyEmailPage = () => {
 
   const handleResend = () => {
     if (time > 0) return;
-    console.log("Resend verification code triggered");
     resetTime();
   };
 

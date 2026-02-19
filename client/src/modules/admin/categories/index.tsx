@@ -1,5 +1,5 @@
+import { useState } from "react";
 import {
-  chakra,
   Flex,
   Stack,
   Heading,
@@ -13,16 +13,20 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Plus } from "lucide-react";
-import { Link as RouterLink } from "@tanstack/react-router";
 
-import CategoryCard from "./CategoryCard";
+import CategoryDisplay from "./CategoryDisplay";
 
 import { useCategoriesQuery } from "@/services/category/category.hooks";
 
-const Link = chakra(RouterLink);
-
 const AdminCategoriesPage = () => {
-  const { data, isFetching, isError } = useCategoriesQuery();
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+
+  const { data, isFetching, isError } = useCategoriesQuery({
+    limit: 6,
+    page,
+    search,
+  });
 
   if (isError) {
     return (
@@ -110,75 +114,13 @@ const AdminCategoriesPage = () => {
 
   if (data)
     return (
-      <Stack gap={4} color={"gray.900"} w={"full"}>
-        <Flex
-          gap={4}
-          alignItems={{ sm: "center" }}
-          justifyContent={"space-between"}
-          direction={{ base: "column", sm: "row" }}
-        >
-          <Heading>Categories</Heading>
-          <Link href={`/admin/categories/new`} alignSelf={"end"}>
-            <Button
-              size="md"
-              w="full"
-              textTransform="uppercase"
-              bg="orange.500"
-              color="white"
-              fontWeight={700}
-              _hover={{ bg: "orange.500" }}
-              _active={{ bg: "orange.500" }}
-            >
-              <Plus />
-              &nbsp;Add Category
-            </Button>
-          </Link>
-        </Flex>
-        {!data.categories?.length ? (
-          <Stack
-            p={6}
-            gap={3}
-            align="center"
-            justify="center"
-            color="gray.600"
-            textAlign="center"
-          >
-            <Text>No categories found</Text>
-            <Link
-              to="/admin/categories/new"
-              _hover={{ textDecoration: "none" }}
-            >
-              <Button
-                size="md"
-                textTransform="uppercase"
-                borderColor="blue.500"
-                bg="transparent"
-                color="blue.500"
-                fontWeight={700}
-                _hover={{
-                  border: "blue.500",
-                  bg: "transparent",
-                  borderColor: "blue.500",
-                }}
-                _active={{
-                  border: "blue.500",
-                  bg: "transparent",
-                  borderColor: "blue.500",
-                }}
-              >
-                <Plus />
-                &nbsp;Add Category
-              </Button>
-            </Link>
-          </Stack>
-        ) : (
-          <SimpleGrid columns={{ base: 1, sm: 2, xl: 3 }} gap={4}>
-            {data.categories.map((category) => (
-              <CategoryCard {...category} key={category.id} />
-            ))}
-          </SimpleGrid>
-        )}
-      </Stack>
+      <CategoryDisplay
+        search={search}
+        setSearch={setSearch}
+        data={data}
+        page={page}
+        setPage={setPage}
+      />
     );
 
   return null;

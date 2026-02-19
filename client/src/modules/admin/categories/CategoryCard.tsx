@@ -38,9 +38,6 @@ const CategoryCard = ({ image, name, description, slug }: Category) => {
       <Card.Body gap="2">
         <Card.Title>{name}</Card.Title>
         <Card.Description>{description || "--"}</Card.Description>
-        <Text textStyle="2xl" fontWeight="medium" letterSpacing="tight" mt="2">
-          $450
-        </Text>
       </Card.Body>
       <Flex
         direction={{ base: "row", sm: "row", md: "column", lg: "row" }}

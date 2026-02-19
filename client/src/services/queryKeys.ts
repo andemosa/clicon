@@ -1,4 +1,8 @@
-import type { AddressType, GetCategoriesParams } from "@/types";
+import type {
+  AddressType,
+  GetCategoriesParams,
+  GetProductsParams,
+} from "@/types";
 
 export const queryKeys = {
   getCities: (countryId: number, stateId: number) => [
@@ -19,7 +23,11 @@ export const queryKeys = {
 
   createCategory: ["createCategory"],
   getCategories: ["getCategories"],
-  getCategory: (slug: string, params?: GetCategoriesParams) => ["getCategory", slug, params],
+  getCategory: (slug: string, params?: GetCategoriesParams) => [
+    "getCategory",
+    slug,
+    params,
+  ],
   updateCategory: (slug: string) => ["updateCategory", slug],
   deleteCategory: (slug: string) => ["deleteCategory", slug],
 
@@ -27,4 +35,14 @@ export const queryKeys = {
   getTags: ["getTags"],
   updateTag: (id: string) => ["updateTag", id],
   deleteTag: (id: string) => ["deleteTag", id],
+
+  createProduct: ["createProduct"],
+  getProducts: ["getProducts"],
+  getProduct: (slug: string, params?: GetProductsParams) => [
+    "getProduct",
+    slug,
+    params,
+  ],
+  updateProduct: (slug: string) => ["updateProduct", slug],
+  deleteProduct: (slug: string) => ["deleteProduct", slug],
 };

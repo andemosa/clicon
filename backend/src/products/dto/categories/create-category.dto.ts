@@ -6,21 +6,22 @@ export class CreateCategoryDto {
   name: string;
 
   @IsOptional()
+  @Transform(({ value }) => (value === '' ? undefined : value))
   @IsString()
   slug?: string;
 
   @IsOptional()
+  @Transform(({ value }) => (value === '' ? undefined : value))
   @IsString()
   description?: string;
 
   @IsOptional()
   @IsBoolean()
-  @Transform(({ value }) => {
-    return Boolean(value);
-  })
-  isActive?: string;
+  @Transform(({ value }) => value === 'true' || value === true)
+  isActive?: boolean;
 
   @IsOptional()
+  @Transform(({ value }) => (value === '' ? undefined : value))
   @IsUUID()
   parentId?: string;
 }

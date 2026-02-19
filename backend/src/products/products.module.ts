@@ -11,28 +11,14 @@ import { ProductsService } from './services/products.service';
 import { CategoriesService } from './services/categories.service';
 import { TagsService } from './services/tags.service';
 
-import { AttributeValue } from './entities/attribute-value.entity';
-import { Attribute } from './entities/attribute.entity';
 import { Category } from './entities/category.entity';
-import { ProductImage } from './entities/product-image.entity';
-import { ProductVariant } from './entities/product-variant.entity';
 import { Product } from './entities/product.entity';
 import { Tag } from './entities/tag.entity';
-import { VariantAttribute } from './entities/variant-attribute.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      Product,
-      ProductVariant,
-      ProductImage,
-      VariantAttribute,
-      Attribute,
-      AttributeValue,
-      Tag,
-      Category,
-    ]),
-    CloudinaryModule
+    TypeOrmModule.forFeature([Product, Tag, Category]),
+    CloudinaryModule,
   ],
   providers: [ProductsService, CategoriesService, TagsService],
   controllers: [ProductsController, CategoriesController, TagsController],

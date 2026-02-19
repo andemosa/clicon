@@ -1,32 +1,25 @@
-import { useState } from "react";
 import {
-  Flex,
   Stack,
-  Heading,
-  Button,
-  Alert,
+  Flex,
+  Text,
+  SimpleGrid,
   GridItem,
   Separator,
-  SimpleGrid,
+  Alert,
+  Heading,
   Skeleton,
   SkeletonText,
-  Text,
 } from "@chakra-ui/react";
-import { Plus } from "lucide-react";
+import { getRouteApi } from "@tanstack/react-router";
 
-import ProductDisplay from "./ProductDisplay";
+import Display from "./Display";
 
-import { useProductsQuery } from "@/services/product/product.hooks";
+import { useProductQuery } from "@/services/product/product.hooks";
 
-const AdminProductsPage = () => {
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-
-  const { data, isFetching, isError } = useProductsQuery({
-    limit: 6,
-    page,
-    search,
-  });
+const AdminEditProductPage = () => {
+  const routeApi = getRouteApi("/admin/products/$slug/edit");
+  const params = routeApi.useParams();
+  const { data, isFetching, isError } = useProductQuery(params.slug, {});
 
   if (isError) {
     return (
@@ -34,7 +27,7 @@ const AdminProductsPage = () => {
         <Alert.Indicator />
         <Alert.Content>
           <Alert.Title>Error occurred</Alert.Title>
-          <Alert.Description>Failed to fetch products</Alert.Description>
+          <Alert.Description>Failed to fetch product</Alert.Description>
         </Alert.Content>
       </Alert.Root>
     );
@@ -43,7 +36,7 @@ const AdminProductsPage = () => {
   if (!data && !isFetching) {
     return (
       <Stack p={10} align="center">
-        <Text>No products data found.</Text>
+        <Text>No product data found.</Text>
       </Stack>
     );
   }
@@ -53,27 +46,12 @@ const AdminProductsPage = () => {
       <>
         <Stack gap={4} color={"gray.900"} w={"full"}>
           <Flex
-            gap={4}
-            alignItems={{ sm: "center" }}
+            gap={2}
+            alignItems={"center"}
             justifyContent={"space-between"}
             direction={{ base: "column", sm: "row" }}
           >
-            <Heading>Products</Heading>
-            <Button
-              disabled
-              alignSelf={"end"}
-              size="md"
-              w="max-content"
-              textTransform="uppercase"
-              bg="orange.500"
-              color="white"
-              fontWeight={700}
-              _hover={{ bg: "orange.500" }}
-              _active={{ bg: "orange.500" }}
-            >
-              <Plus />
-              &nbsp;Add Product
-            </Button>
+            <Heading>Product</Heading>
           </Flex>
           <Separator variant="solid" size="sm" w="full" />
           <SimpleGrid
@@ -112,18 +90,9 @@ const AdminProductsPage = () => {
     );
   }
 
-  if (data)
-    return (
-      <ProductDisplay
-        search={search}
-        setSearch={setSearch}
-        data={data}
-        page={page}
-        setPage={setPage}
-      />
-    );
+  if (data) return <Display key={data.updatedAt} product={data} />;
 
   return null;
 };
 
-export default AdminProductsPage;
+export default AdminEditProductPage;

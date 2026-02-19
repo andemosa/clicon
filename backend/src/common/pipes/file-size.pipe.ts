@@ -3,7 +3,7 @@ import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common';
 @Injectable()
 export class FileSizeValidationPipe implements PipeTransform {
   transform(value: any) {
-    const maxSize = 5 * 1024 * 1024; // 5MB (adjust as needed)
+    const maxSize = 5 * 1024 * 1024; // 5MB 
 
     if (value && !value?.size) {
       throw new BadRequestException('File not found or invalid.');

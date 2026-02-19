@@ -48,7 +48,7 @@ export class Category {
   @OneToMany(() => Category, (category) => category.parent)
   children: Category[];
 
-  @ManyToMany(() => Product, (product) => product.categories)
+  @OneToMany(() => Product, (product) => product.category)
   products: Product[];
 
   @CreateDateColumn({ type: 'timestamptz' })

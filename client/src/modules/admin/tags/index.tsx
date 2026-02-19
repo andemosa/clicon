@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Flex,
   Stack,
@@ -6,18 +7,23 @@ import {
   Alert,
   Text,
   SkeletonText,
-  useDisclosure,
+  VStack,
 } from "@chakra-ui/react";
 import { Plus } from "lucide-react";
 
-import TagRow from "./TagRow";
-import TagModal from "./TagModal";
+import TagDisplay from "./TagDisplay";
 
 import { useTagsQuery } from "@/services/tag/tag.hooks";
 
 const AdminTagsPage = () => {
-  const { data, isFetching, isError } = useTagsQuery();
-  const { open, onOpen, onClose } = useDisclosure();
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+
+  const { data, isFetching, isError } = useTagsQuery({
+    limit: 6,
+    page,
+    search,
+  });
 
   if (isError) {
     return (
@@ -33,9 +39,9 @@ const AdminTagsPage = () => {
 
   if (!data && !isFetching) {
     return (
-      <Stack p={10} align="center">
+      <VStack p={10} align="center">
         <Text>No tags found.</Text>
-      </Stack>
+      </VStack>
     );
   }
 
@@ -75,60 +81,14 @@ const AdminTagsPage = () => {
   }
 
   return (
-    <Stack gap={4} color={"gray.900"} w={"full"}>
-      <Flex
-        gap={4}
-        alignItems={{ sm: "center" }}
-        justifyContent={"space-between"}
-        direction={{ base: "column", sm: "row" }}
-      >
-        <Heading>Tags</Heading>
-        <Button
-          size="md"
-          w="max-content"
-          textTransform="uppercase"
-          bg="orange.500"
-          color="white"
-          fontWeight={700}
-          _hover={{ bg: "orange.500" }}
-          _active={{ bg: "orange.500" }}
-          onClick={onOpen}
-          alignSelf={"end"}
-        >
-          <Plus />
-          &nbsp;Add Tag
-        </Button>
-      </Flex>
-
-      {!data?.tags.length ? (
-        <Stack gap={3}>
-          <Text>No tags found.</Text>
-          <Button
-            size="md"
-            w="max-content"
-            textTransform="uppercase"
-            bg="orange.500"
-            color="white"
-            fontWeight={700}
-            _hover={{ bg: "orange.500" }}
-            _active={{ bg: "orange.500" }}
-          >
-            <Plus />
-            &nbsp;Add New Tag
-          </Button>
-        </Stack>
-      ) : (
-        <Stack gap={3}>
-          {data.tags.map((tag) => (
-            <TagRow tag={tag} isFetching={isFetching} key={tag.id} />
-          ))}
-        </Stack>
-      )}
-
-      {open ? (
-        <TagModal open={open} closeModal={onClose} type={"new"} key={"new"} />
-      ) : null}
-    </Stack>
+    <TagDisplay
+      isFetching={isFetching}
+      search={search}
+      setSearch={setSearch}
+      data={data}
+      page={page}
+      setPage={setPage}
+    />
   );
 };
 

@@ -21,7 +21,6 @@ export class TagsController {
 
   @Post()
   create(@Body() createTagDto: CreateTagDto) {
-    console.log(createTagDto)
     return this.tagsService.createTag(createTagDto.name);
   }
 

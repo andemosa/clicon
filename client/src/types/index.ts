@@ -3,6 +3,7 @@ export * from "./profile";
 export * from "./open";
 export * from "./categories";
 export * from "./tag";
+export * from "./product";
 
 type ApiError = {
   message: string; // user-friendly message

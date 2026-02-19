@@ -1,5 +1,5 @@
 export const cloudinaryFolders = {
   avatars: 'avatars',
   categories: 'categories',
-  products: 'avatars',
+  products: 'products',
 };

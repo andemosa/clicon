@@ -115,7 +115,7 @@ export class CategoriesService {
 
   async findAll(query: GetCategoriesDto): Promise<{
     categories: Category[];
-    meta: { total: number; page: number; limit: number };
+    meta: { total: number; page: number; limit: number; pages: number };
   }> {
     const {
       search,
@@ -194,7 +194,7 @@ export class CategoriesService {
 
     return {
       categories,
-      meta: { total, page, limit },
+      meta: { total, page, limit, pages: Math.ceil(total / limit) },
     };
   }
 
@@ -357,8 +357,8 @@ export class CategoriesService {
         ...updateCategoryDto,
         ...(image && { image: image }),
         ...(imageId && { imageId: imageId }),
-        ...(updateCategoryDto.deleteImage && { image: "" }),
-        ...(updateCategoryDto.deleteImage && { imageId: "" }),
+        ...(updateCategoryDto.deleteImage && { image: '' }),
+        ...(updateCategoryDto.deleteImage && { imageId: '' }),
       });
 
       if (updateCategoryDto.parentId !== undefined) {

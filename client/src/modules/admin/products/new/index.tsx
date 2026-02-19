@@ -9,6 +9,8 @@ import {
   GridItem,
   Separator,
   Spinner,
+  useFileUpload,
+  FileUpload,
 } from "@chakra-ui/react";
 import { ArrowLeftIcon } from "lucide-react";
 import { Link as RouterLink, useNavigate } from "@tanstack/react-router";
@@ -21,25 +23,18 @@ import Category from "./Category";
 import Tags from "./Tags";
 import Info from "./Info";
 import Price from "./Price";
-import SeoSettings from "./SeoSettings";
 import ImageUploader from "./Image";
 import { toaster } from "@/components/ui/toaster";
 
 import { type newProductFormData, newProductSchema } from "@/schemas";
-import { useCreateCategory } from "@/services/category/category.hooks";
 import { queryKeys } from "@/services/queryKeys";
+import { useCreateProduct } from "@/services/product/product.hooks";
+import type { Tag } from "@/types";
 
 const Link = chakra(RouterLink);
 
-type FileWithPreview = {
-  id: string;
-  file: File;
-  preview: string;
-};
-
 const AdminNewProductsPage = () => {
-  const [files, setFiles] = useState<FileWithPreview[]>([]);
-  const [tags, setTags] = useState<string[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
 
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -47,28 +42,33 @@ const AdminNewProductsPage = () => {
     register,
     handleSubmit,
     watch,
+    control,
     formState: { errors },
   } = useForm<newProductFormData>({
     resolver: zodResolver(newProductSchema),
     defaultValues: {
-      active: true,
       description: "",
       parent: "",
       name: "",
     },
   });
+  const fileUpload = useFileUpload({
+    maxFiles: 1,
+    accept: "image/*",
+  });
+  const files = fileUpload.acceptedFiles;
 
-  const { mutate, isPending } = useCreateCategory({
+  const { mutate, isPending } = useCreateProduct({
     onSuccess: () => {
       toaster.create({
-        title: "Category created successfully",
+        title: "Product created successfully",
         type: "success",
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.getCategories,
+        queryKey: queryKeys.getProducts,
       });
       navigate({
-        to: "/admin/categories",
+        to: "/admin/products",
       });
     },
     onError: (err) => {
@@ -79,14 +79,60 @@ const AdminNewProductsPage = () => {
     },
   });
 
-  const onSubmit = handleSubmit((data) => {
-    mutate({
-      isActive: data.active,
-      name: data.name,
-      description: data.description,
-      parentId: data.parent,
-    });
-  });
+  const onSubmit = handleSubmit(
+    (data) => {
+      if (!files.length) {
+        toaster.create({
+          title: "Please upload an image",
+          type: "error",
+        });
+        return
+      }
+      const parsedData = newProductSchema.parse(data);
+
+      mutate({
+        name: parsedData.name,
+        isActive: true,
+        description: parsedData.description,
+        categoryId: parsedData.parent,
+        price: parsedData.price,
+        stock: parsedData.stock,
+        tagIds: tags.map((item) => item.id),
+        ...(files.length && { image: files[0] }),
+        ...(parsedData.discountType && {
+          discountType: parsedData.discountType,
+        }),
+
+        ...(parsedData.discountValue !== undefined &&
+          !Number.isNaN(parsedData.discountValue) && {
+            discountValue: parsedData.discountValue,
+          }),
+      });
+    },
+
+    (errors) => {
+      const entries = Object.entries(errors);
+
+      if (!entries.length) return;
+
+      const [field, error] = entries[0];
+
+      // Human-readable label
+      const labelMap: Record<string, string> = {
+        name: "Product name",
+        brand: "Brand",
+        price: "Price",
+        stock: "Stock",
+        description: "Description",
+        parent: "Category",
+      };
+
+      toaster.create({
+        title: `${labelMap[field] ?? field}: ${error?.message}`,
+        type: "error",
+      });
+    },
+  );
 
   return (
     <Stack
@@ -135,16 +181,17 @@ const AdminNewProductsPage = () => {
           color={"gray.900"}
           h={"max-content"}
         >
-          <Info register={register} errors={errors} />
+          <Info register={register} errors={errors} control={control} />
           <Separator variant="solid" size={"sm"} w={"95%"} my={4} mx={"auto"} />
           <Price register={register} errors={errors} watch={watch} />
           <Separator variant="solid" size={"sm"} w={"95%"} my={4} mx={"auto"} />
-          <ImageUploader files={files} setFiles={setFiles} />
+          <FileUpload.RootProvider value={fileUpload} w={"full"}>
+            <ImageUploader files={files} />
+          </FileUpload.RootProvider>
         </GridItem>
         <Stack gap={4}>
           <Category register={register} errors={errors} />
           <Tags setTags={setTags} tags={tags} />
-          <SeoSettings />
         </Stack>
       </SimpleGrid>
     </Stack>
