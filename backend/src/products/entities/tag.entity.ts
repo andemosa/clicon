@@ -16,7 +16,11 @@ export class Tag {
 
   @Index({ unique: true })
   @Column({ length: 50 })
-  name: string; // e.g., "game", "phone", "power bank"
+  name: string;
+
+  @Index()
+  @Column({ type: 'int', default: 0 })
+  productCount: number;
 
   @ManyToMany(() => Product, (p) => p.tags)
   products: Product[];

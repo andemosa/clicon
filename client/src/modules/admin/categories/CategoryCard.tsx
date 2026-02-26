@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Card, Image, Text, Box, chakra, Button, Flex } from "@chakra-ui/react";
+import { Card, Image, Text, Box, chakra, Button, Flex, Badge } from "@chakra-ui/react";
 import { Link as RouterLink } from "@tanstack/react-router";
 
 import type { Category } from "@/types";
 
 const Link = chakra(RouterLink);
 
-const CategoryCard = ({ image, name, description, slug }: Category) => {
+const CategoryCard = ({ image, name, description, slug, productCount }: Category) => {
   const [imgError, setImgError] = useState(false);
 
   return (
@@ -36,7 +36,12 @@ const CategoryCard = ({ image, name, description, slug }: Category) => {
       </Box>
 
       <Card.Body gap="2">
-        <Card.Title>{name}</Card.Title>
+        <Flex justify="space-between" align="center">
+          <Card.Title>{name}</Card.Title>
+          <Badge colorScheme="orange" fontWeight={600} borderRadius="full" px="2">
+            {productCount ?? 0} {productCount === 1 ? "Product" : "Products"}
+          </Badge>
+        </Flex>
         <Card.Description>{description || "--"}</Card.Description>
       </Card.Body>
       <Flex

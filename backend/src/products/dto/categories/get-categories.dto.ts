@@ -4,6 +4,7 @@ import {
   IsString,
   IsUUID,
   IsInt,
+  IsIn,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 
@@ -20,7 +21,13 @@ export class GetCategoriesDto {
 
   @IsOptional()
   @IsString()
-  sort?: string;
+  @IsIn(['name', 'createdAt', 'productCount'])
+  sort?: 'name' | 'createdAt' | 'productCount';
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['asc', 'desc'])
+  order?: 'asc' | 'desc';
 
   @IsOptional()
   @IsString()

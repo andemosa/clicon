@@ -5,7 +5,6 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
-  ManyToMany,
   CreateDateColumn,
   UpdateDateColumn,
   Index,
@@ -38,6 +37,10 @@ export class Category {
 
   @Column({ nullable: true })
   parentId: string;
+
+  @Index()
+  @Column({ type: 'int', default: 0 })
+  productCount: number;
 
   @ManyToOne(() => Category, (category) => category.children, {
     nullable: true,

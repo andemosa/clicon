@@ -63,6 +63,8 @@ type GetProductsParams = {
   search?: string;
   sort?: string;
   isActive?: boolean;
+  categorySlug?: string;
+  tagName?: string;
 };
 
 export type {

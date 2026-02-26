@@ -180,13 +180,10 @@ export class CategoriesService {
       qb.andWhere('category.parentId = :parentId', { parentId });
     }
 
-    // Order by name
-    qb.orderBy('category.name', 'ASC');
-    // Sorting
-    if (query.sort === 'asc') qb.orderBy('category.name', 'ASC');
-    else if (query.sort === 'desc') qb.orderBy('category.name', 'DESC');
-    else if (query.sort === 'oldest') qb.orderBy('category.createdAt', 'ASC');
-    else qb.orderBy('category.createdAt', 'DESC');
+    const sortBy = query.sort || 'createdAt';
+    const order = query.order?.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+
+    qb.orderBy(`category.${sortBy}`, order);
 
     qb.skip((page - 1) * limit).take(limit);
 
@@ -457,5 +454,27 @@ export class CategoriesService {
     );
 
     return { updated: result.affected || 0 };
+  }
+
+  async getTopCategories(limit = 6) {
+    const results = await this.categoryRepo
+      .createQueryBuilder('c')
+      .leftJoin('c.products', 'p')
+      .where('c.isActive = :isActive', { isActive: true })
+      .select([
+        'c.name AS name',
+        'c.slug AS slug',
+        'COUNT(p.id) AS "productCount"',
+      ])
+      .groupBy('c.id')
+      .orderBy('COUNT(p.id)', 'DESC')
+      .limit(limit)
+      .getRawMany();
+
+    return results.map((r) => ({
+      name: r.name,
+      slug: r.slug,
+      productCount: Number(r.productCount),
+    }));
   }
 }

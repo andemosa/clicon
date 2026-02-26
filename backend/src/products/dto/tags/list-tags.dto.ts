@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsNumber } from 'class-validator';
+import { IsOptional, IsString, IsNumber, IsIn } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class ListTagsDto {
@@ -18,7 +18,13 @@ export class ListTagsDto {
 
   @IsOptional()
   @IsString()
-  sort?: 'asc' | 'desc' | 'usage';
+  @IsIn(['name', 'productCount'])
+  sort?: 'name' | 'productCount';
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['asc', 'desc'])
+  order?: 'asc' | 'desc';
 
   @IsOptional()
   @IsString()

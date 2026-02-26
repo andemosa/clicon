@@ -40,8 +40,8 @@ export class ProductsService {
   ) {}
 
   /* =====================
-     Create Product
-  ====================== */
+   Create Product
+====================== */
 
   async create(
     dto: CreateProductDto,
@@ -50,21 +50,18 @@ export class ProductsService {
     return this.dataSource.transaction(async (manager) => {
       this.validateDiscount(dto);
 
-      // 1. Category (single)
-      let category: Category | null = null;
-      if (dto.categoryId) {
-        category = await manager.findOne(Category, {
-          where: { id: dto.categoryId },
-        });
-        if (!category) {
-          throw new BadRequestException('Category not found');
-        }
+      const category = await manager.findOne(Category, {
+        where: { id: dto.categoryId },
+      });
+
+      if (!category) {
+        throw new BadRequestException('Category not found');
       }
 
-      // 2. Slug
       const slug = await this.generateUniqueSlug(manager, dto.name);
 
-      let image, imageId;
+      let image: string | undefined;
+      let imageId: string | undefined;
 
       if (file) {
         const uploaded = await this.cloudinaryService.uploadImage(
@@ -75,24 +72,36 @@ export class ProductsService {
         imageId = uploaded['public_id'];
       }
 
-      // 3. Create product FIRST
+      let tags: Tag[] = [];
+
+      if (dto.tagIds?.length) {
+        tags = await manager.find(Tag, {
+          where: { id: In(dto.tagIds) },
+        });
+      }
+
       const product = manager.create(Product, {
         ...dto,
         slug,
-        category: category!,
-        ...(image && { image: image }),
-        ...(imageId && { imageId: imageId }),
+        category,
+        tags,
+        ...(image && { image }),
+        ...(imageId && { imageId }),
       });
 
       await manager.save(Product, product);
 
-      // 5. Tags
-      if (dto.tagIds?.length) {
-        product.tags = await this.getTags(manager, dto.tagIds);
+      // increment category count
+      await manager.increment(Category, { id: category.id }, 'productCount', 1);
+
+      // increment tag counts
+      if (tags.length) {
+        for (const tag of tags) {
+          await manager.increment(Tag, { id: tag.id }, 'productCount', 1);
+        }
       }
 
-      const createdProd = await manager.save(Product, product);
-      return this.mapProduct(createdProd);
+      return this.mapProduct(product);
     });
   }
 
@@ -108,7 +117,7 @@ export class ProductsService {
     return this.dataSource.transaction(async (manager) => {
       const product = await manager.findOne(Product, {
         where: { id },
-        relations: ['category', 'tags',],
+        relations: ['category', 'tags'],
       });
 
       if (!product) {
@@ -117,18 +126,28 @@ export class ProductsService {
 
       this.validateDiscount(dto);
 
+      const oldCategoryId = product.category.id;
+      const oldTags = product.tags || [];
+
       // Regenerate slug if name changes
       if (dto.name && dto.name !== product.name) {
         product.slug = await this.generateUniqueSlug(manager, dto.name);
       }
 
       // Category update
-      if (dto.categoryId) {
-        const category = await manager.findOne(Category, {
+      let newCategoryId = oldCategoryId;
+
+      if (dto.categoryId && dto.categoryId !== oldCategoryId) {
+        const newCategory = await manager.findOne(Category, {
           where: { id: dto.categoryId },
         });
-        if (!category) throw new BadRequestException('Category not found');
-        product.category = category;
+
+        if (!newCategory) {
+          throw new NotFoundException('Category not found');
+        }
+
+        product.category = newCategory;
+        newCategoryId = newCategory.id;
       }
 
       let image = product.image;
@@ -148,7 +167,13 @@ export class ProductsService {
       }
 
       // Tags update
+      let newTags = oldTags;
+
       if (dto.tagIds) {
+        newTags = await manager.find(Tag, {
+          where: { id: In(dto.tagIds) },
+        });
+
         product.tags = await this.getTags(manager, dto.tagIds);
       }
 
@@ -159,6 +184,38 @@ export class ProductsService {
       });
 
       const updatedProd = await manager.save(Product, product);
+
+      if (oldCategoryId !== newCategoryId) {
+        await manager.decrement(
+          Category,
+          { id: oldCategoryId },
+          'productCount',
+          1,
+        );
+
+        await manager.increment(
+          Category,
+          { id: newCategoryId },
+          'productCount',
+          1,
+        );
+      }
+
+      const removedTags = oldTags.filter(
+        (oldTag) => !newTags.some((newTag) => newTag.id === oldTag.id),
+      );
+
+      const addedTags = newTags.filter(
+        (newTag) => !oldTags.some((oldTag) => oldTag.id === newTag.id),
+      );
+
+      for (const tag of removedTags) {
+        await manager.decrement(Tag, { id: tag.id }, 'productCount', 1);
+      }
+
+      for (const tag of addedTags) {
+        await manager.increment(Tag, { id: tag.id }, 'productCount', 1);
+      }
       return this.mapProduct(updatedProd);
     });
   }
@@ -170,7 +227,7 @@ export class ProductsService {
   async findOne(id: string): Promise<ProductResponseDto> {
     const product = await this.productRepo.findOne({
       where: { id },
-      relations: ['category', 'tags', ],
+      relations: ['category', 'tags'],
     });
 
     if (!product) {
@@ -183,7 +240,7 @@ export class ProductsService {
   async findBySlug(slug: string): Promise<ProductResponseDto> {
     const product = await this.productRepo.findOne({
       where: { slug },
-      relations: ['category', 'tags',],
+      relations: ['category', 'tags'],
     });
 
     if (!product) {
@@ -203,6 +260,8 @@ export class ProductsService {
       brand,
       categoryId,
       tagIds,
+      categorySlug,
+      tagName,
       minPrice,
       maxPrice,
       sortBy = ProductSortBy.CREATED_AT,
@@ -244,6 +303,14 @@ export class ProductsService {
       qb.andWhere('tag.id IN (:...tagIds)', { tagIds });
     }
 
+    if (categorySlug) {
+      qb.andWhere('category.slug = :categorySlug', { categorySlug });
+    }
+
+    if (tagName) {
+      qb.andWhere('tag.name = :tagName', { tagName });
+    }
+
     if (minPrice !== undefined) {
       qb.andWhere('product.price >= :minPrice', { minPrice });
     }
@@ -280,15 +347,39 @@ export class ProductsService {
   }
 
   /* =====================
-     Delete Product
-  ====================== */
+   Delete Product
+====================== */
 
   async remove(id: string): Promise<void> {
-    const result = await this.productRepo.delete(id);
+    await this.dataSource.transaction(async (manager) => {
+      const product = await manager.findOne(Product, {
+        where: { id },
+        relations: ['category', 'tags'],
+      });
 
-    if (!result.affected) {
-      throw new NotFoundException('Product not found');
-    }
+      if (!product) {
+        throw new NotFoundException('Product not found');
+      }
+
+      await manager.decrement(
+        Category,
+        { id: product.category.id },
+        'productCount',
+        1,
+      );
+
+      if (product.tags?.length) {
+        for (const tag of product.tags) {
+          await manager.decrement(Tag, { id: tag.id }, 'productCount', 1);
+        }
+      }
+
+      if (product.imageId) {
+        await this.cloudinaryService.deleteImage(product.imageId);
+      }
+
+      await manager.remove(Product, product);
+    });
   }
 
   /* =====================

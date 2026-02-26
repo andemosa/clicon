@@ -10,6 +10,7 @@ import {
   Input,
   InputGroup,
   IconButton,
+  NativeSelect,
 } from "@chakra-ui/react";
 import { Plus, SearchIcon } from "lucide-react";
 import { Link as RouterLink } from "@tanstack/react-router";
@@ -23,15 +24,23 @@ const Link = chakra(RouterLink);
 const CategoryDisplay = ({
   data,
   page,
+  order,
+  sort,
   search,
   setPage,
   setSearch,
+  setOrder,
+  setSort,
 }: {
   data: any;
   page: number;
   search: string;
+  order: "desc" | "asc";
+  sort: string;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
   setPage: React.Dispatch<React.SetStateAction<number>>;
+  setOrder: React.Dispatch<React.SetStateAction<"desc" | "asc">>;
+  setSort: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   const [searchTerm, setSearchTerm] = useState(search);
 
@@ -45,33 +54,76 @@ const CategoryDisplay = ({
       >
         <Flex
           gap={2}
-          alignItems={{ sm: "center" }}
-          direction={{ base: "column", sm: "row" }}
+          direction={{ base: "column", xl: "row" }}
+          alignItems={{ xl: "center" }}
         >
-          <Heading>Categories</Heading>
-          <InputGroup
-            as={"form"}
-            bg={"white"}
-            endElement={
-              <Tooltip content="Click to search">
-                <IconButton boxSize="8" color="blue.700">
-                  <SearchIcon />
-                </IconButton>
-              </Tooltip>
-            }
-            flex={1}
-            mx="auto"
-            onSubmit={(e) => {
-              e.preventDefault();
-              setSearch(searchTerm);
-            }}
+          <Flex
+            gap={2}
+            alignItems={{ sm: "center" }}
+            direction={{ base: "column", sm: "row" }}
           >
-            <Input
-              placeholder="Search for category..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </InputGroup>
+            <Heading>Categories</Heading>
+            <InputGroup
+              as={"form"}
+              bg={"white"}
+              endElement={
+                <Tooltip content="Click to search">
+                  <IconButton boxSize="8" color="blue.700">
+                    <SearchIcon />
+                  </IconButton>
+                </Tooltip>
+              }
+              flex={1}
+              mx="auto"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setSearch(searchTerm);
+              }}
+            >
+              <Input
+                placeholder="Search for category..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </InputGroup>
+          </Flex>
+          <Flex
+            gap={3}
+            alignItems={{ sm: "center" }}
+            direction={{ base: "column", sm: "row" }}
+          >
+            <NativeSelect.Root size="sm">
+              <NativeSelect.Field
+                value={sort}
+                onChange={(e) =>
+                  setSort(
+                    e.currentTarget.value as
+                      | "name"
+                      | "createdAt"
+                      | "productCount",
+                  )
+                }
+              >
+                <option value="createdAt">Date Created</option>
+                <option value="name">Name</option>
+                <option value="productCount">Product Count</option>
+              </NativeSelect.Field>
+              <NativeSelect.Indicator />
+            </NativeSelect.Root>
+
+            <NativeSelect.Root size="sm">
+              <NativeSelect.Field
+                value={order}
+                onChange={(e) =>
+                  setOrder(e.currentTarget.value as "asc" | "desc")
+                }
+              >
+                <option value="desc">Descending</option>
+                <option value="asc">Ascending</option>
+              </NativeSelect.Field>
+              <NativeSelect.Indicator />
+            </NativeSelect.Root>
+          </Flex>
         </Flex>
         <Link href={`/admin/categories/new`} alignSelf={"end"}>
           <Button

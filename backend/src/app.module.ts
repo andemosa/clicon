@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CacheModule } from '@nestjs/cache-manager';
 
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
@@ -29,6 +30,7 @@ import { ProductsModule } from './products/products.module';
       }),
       inject: [ConfigService],
     }),
+    CacheModule.register(),
     AuthModule,
     UsersModule,
     CloudinaryModule,

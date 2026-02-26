@@ -10,10 +10,15 @@ import {
   Flex,
   Heading,
   useDisclosure,
+  chakra,
 } from "@chakra-ui/react";
 import { Heart, ShoppingCart, Eye } from "lucide-react";
 import { useState } from "react";
+import { Link as RouterLink } from "@tanstack/react-router";
+
 import QuickView from "./QuickView";
+
+const Link = chakra(RouterLink);
 
 interface Product {
   id: number;
@@ -217,9 +222,11 @@ const BestDeals = () => {
             </Badge>
           </Flex>
         </Flex>
-        <Text fontSize={{ base: "xs", sm: "sm" }} color={"blue.500"}>
-          Browse All Product
-        </Text>
+        <Link href={"/shop"} _focus={{ boxShadow: "none", outline: "none" }}>
+          <Text fontSize={{ base: "xs", sm: "sm" }} color={"blue.500"}>
+            Browse All Product
+          </Text>
+        </Link>
       </Flex>
       <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} gap={6} mt={4}>
         {products.map((product) => (

@@ -13,23 +13,24 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Plus } from "lucide-react";
+import { getRouteApi } from "@tanstack/react-router";
 
-import CategoryDisplay from "./CategoryDisplay";
+import ProductDisplay from "./ProductDisplay";
 
-import { useCategoriesQuery } from "@/services/category/category.hooks";
+import { useProductsQuery } from "@/services/product/product.hooks";
+import { slugToTitle } from "@/utils/stringUtils";
 
-const AdminCategoriesPage = () => {
+const AdminTagProductsPage = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState("createdAt");
-  const [order, setOrder] = useState<"asc" | "desc">("desc");
+  const routeApi = getRouteApi("/admin/tags/$name/products");
+  const params = routeApi.useParams();
 
-  const { data, isFetching, isError } = useCategoriesQuery({
+  const { data, isFetching, isError } = useProductsQuery({
     limit: 6,
     page,
     search,
-    sort,
-    order,
+    tagName: params.name,
   });
 
   if (isError) {
@@ -38,7 +39,7 @@ const AdminCategoriesPage = () => {
         <Alert.Indicator />
         <Alert.Content>
           <Alert.Title>Error occurred</Alert.Title>
-          <Alert.Description>Failed to fetch categories</Alert.Description>
+          <Alert.Description>Failed to fetch products</Alert.Description>
         </Alert.Content>
       </Alert.Root>
     );
@@ -47,7 +48,7 @@ const AdminCategoriesPage = () => {
   if (!data && !isFetching) {
     return (
       <Stack p={10} align="center">
-        <Text>No categories data found.</Text>
+        <Text>No products data found.</Text>
       </Stack>
     );
   }
@@ -62,7 +63,10 @@ const AdminCategoriesPage = () => {
             justifyContent={"space-between"}
             direction={{ base: "column", sm: "row" }}
           >
-            <Heading>Categories</Heading>
+            <Heading textTransform={"capitalize"}>
+              {slugToTitle(params.name)} Products
+            </Heading>
+
             <Button
               disabled
               alignSelf={"end"}
@@ -76,7 +80,7 @@ const AdminCategoriesPage = () => {
               _active={{ bg: "orange.500" }}
             >
               <Plus />
-              &nbsp;Add Category
+              &nbsp;Add Product
             </Button>
           </Flex>
           <Separator variant="solid" size="sm" w="full" />
@@ -118,20 +122,16 @@ const AdminCategoriesPage = () => {
 
   if (data)
     return (
-      <CategoryDisplay
+      <ProductDisplay
         search={search}
         setSearch={setSearch}
         data={data}
         page={page}
-        order={order}
-        sort={sort}
         setPage={setPage}
-        setOrder={setOrder}
-        setSort={setSort}
       />
     );
 
   return null;
 };
 
-export default AdminCategoriesPage;
+export default AdminTagProductsPage;

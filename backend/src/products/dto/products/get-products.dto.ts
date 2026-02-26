@@ -53,6 +53,14 @@ export class GetProductsDto {
   categoryId?: string;
 
   @IsOptional()
+  @IsString()
+  categorySlug?: string;
+  
+  @IsOptional()
+  @IsString()
+  tagName?: string;
+
+  @IsOptional()
   @Type(() => Number)
   @IsNumber()
   minPrice?: number;

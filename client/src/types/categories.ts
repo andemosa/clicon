@@ -8,6 +8,7 @@ type BaseCategory = {
 
 type Category = BaseCategory & {
   id: string;
+  productCount: number;
   image?: string | null;
   parent?: Category | null;
   children?: Category[];
@@ -44,6 +45,7 @@ type GetCategoriesParams = {
   page?: number;
   search?: string;
   sort?: string;
+  order?: string;
   isActive?: boolean;
   includeChildren?: boolean;
   includeProducts?: boolean;

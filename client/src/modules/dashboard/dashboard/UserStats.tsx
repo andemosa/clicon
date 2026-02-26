@@ -111,11 +111,11 @@ const UserStats = ({ data }: { data: UserDashboardRes }) => {
             <Stack>
               <Flex>
                 <Text>Email:</Text>
-                <Text color={"gray.600"}>{data.billingAddress.email}</Text>
+                <Text color={"gray.600"} wordBreak="break-all">{data.billingAddress.email}</Text>
               </Flex>
               <Flex>
                 <Text>Phone:</Text>
-                <Text color={"gray.600"}>{data.billingAddress.phone}</Text>
+                <Text color={"gray.600"} wordBreak="break-all">{data.billingAddress.phone}</Text>
               </Flex>
             </Stack>
             <Link

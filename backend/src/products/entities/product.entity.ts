@@ -6,13 +6,10 @@ import {
   UpdateDateColumn,
   ManyToMany,
   JoinTable,
-  OneToMany,
   Index,
   BeforeInsert,
   BeforeUpdate,
   ManyToOne,
-  JoinColumn,
-  OneToOne,
 } from 'typeorm';
 
 import { Category } from './category.entity';

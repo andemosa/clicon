@@ -10,6 +10,7 @@ import {
   IconButton,
   Input,
   InputGroup,
+  NativeSelect,
 } from "@chakra-ui/react";
 import { Plus, SearchIcon } from "lucide-react";
 
@@ -23,6 +24,10 @@ const TagDisplay = ({
   page,
   search,
   isFetching,
+  order,
+  sort,
+  setOrder,
+  setSort,
   setPage,
   setSearch,
 }: {
@@ -30,8 +35,12 @@ const TagDisplay = ({
   page: number;
   search: string;
   isFetching: boolean;
+  order: "desc" | "asc";
+  sort: string;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
   setPage: React.Dispatch<React.SetStateAction<number>>;
+  setOrder: React.Dispatch<React.SetStateAction<"desc" | "asc">>;
+  setSort: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   const { open, onOpen, onClose } = useDisclosure();
   const [searchTerm, setSearchTerm] = useState(search);
@@ -46,34 +55,72 @@ const TagDisplay = ({
       >
         <Flex
           gap={2}
-          alignItems={{ sm: "center" }}
-          direction={{ base: "column", sm: "row" }}
+          direction={{ base: "column", xl: "row" }}
+          alignItems={{ xl: "center" }}
         >
-          <Heading>Tags</Heading>
-          <InputGroup
-            as={"form"}
-            bg={"white"}
-            endElement={
-              <Tooltip content="Click to search">
-                <IconButton boxSize="8" color="blue.700">
-                  <SearchIcon />
-                </IconButton>
-              </Tooltip>
-            }
-            flex={1}
-            mx="auto"
-            onSubmit={(e) => {
-              e.preventDefault();
-              setSearch(searchTerm);
-            }}
+          <Flex
+            gap={2}
+            alignItems={{ sm: "center" }}
+            direction={{ base: "column", sm: "row" }}
           >
-            <Input
-              placeholder="Search for tag..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </InputGroup>
+            <Heading>Tags</Heading>
+            <InputGroup
+              as={"form"}
+              bg={"white"}
+              endElement={
+                <Tooltip content="Click to search">
+                  <IconButton boxSize="8" color="blue.700">
+                    <SearchIcon />
+                  </IconButton>
+                </Tooltip>
+              }
+              flex={1}
+              mx="auto"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setSearch(searchTerm);
+              }}
+            >
+              <Input
+                placeholder="Search for tag..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </InputGroup>
+          </Flex>
+          <Flex
+            gap={3}
+            alignItems={{ sm: "center" }}
+            direction={{ base: "column", sm: "row" }}
+          >
+            <NativeSelect.Root size="sm">
+              <NativeSelect.Field
+                value={sort}
+                onChange={(e) =>
+                  setSort(e.currentTarget.value as "name" | "productCount")
+                }
+              >
+                <option value="name">Name</option>
+                <option value="productCount">Product Count</option>
+              </NativeSelect.Field>
+              <NativeSelect.Indicator />
+            </NativeSelect.Root>
+
+            <NativeSelect.Root size="sm">
+              <NativeSelect.Field
+                value={order}
+                onChange={(e) =>
+                  setOrder(e.currentTarget.value as "asc" | "desc")
+                }
+              >
+                <option value="desc">Descending</option>
+                <option value="asc">Ascending</option>
+              </NativeSelect.Field>
+              <NativeSelect.Indicator />
+            </NativeSelect.Root>
+          </Flex>
         </Flex>
+
         <Button
           size="md"
           w="max-content"

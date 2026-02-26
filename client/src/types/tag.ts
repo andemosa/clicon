@@ -4,6 +4,7 @@ type BaseTag = {
 
 type Tag = BaseTag & {
   id: string;
+  productCount: number;
 };
 
 type TagReq = BaseTag;
@@ -15,6 +16,7 @@ type GetTagsParams = {
   page?: number;
   search?: string;
   sort?: string;
+  order?: string;
 };
 
 type GetTagsRes = {
