@@ -46,7 +46,13 @@ const ProductCard = (product: Product) => {
   }, [price, discountType, discountValue]);
 
   return (
-    <Card.Root maxW="sm" overflow="hidden">
+    <Card.Root
+      maxW="sm"
+      overflow="hidden"
+      display="flex"
+      flexDirection="column"
+      justifyContent="space-between"
+    >
       <Box
         w="100%"
         h="200px"
@@ -73,19 +79,23 @@ const ProductCard = (product: Product) => {
         )}
       </Box>
 
-      <Card.Body>
+      <Card.Body flex={1}>
         <Stack gap="2">
           <Flex justifyContent={"space-between"} gap={2} alignItems={"center"}>
-            <Card.Title>{name}</Card.Title>
+            <Card.Title lineClamp={1}>{name}</Card.Title>
 
             {category && (
-              <Badge colorScheme="blue" width="fit-content">
-                {category.name}
-              </Badge>
+              <Link
+                to={`/admin/categories/${category.slug}/products`}
+              >
+                <Badge colorScheme="blue" width="fit-content" flexShrink={0}>
+                  {category.name}
+                </Badge>
+              </Link>
             )}
           </Flex>
 
-          <Card.Description>
+          <Card.Description lineClamp={2}>
             <Box dangerouslySetInnerHTML={{ __html: description || "" }} />
           </Card.Description>
 

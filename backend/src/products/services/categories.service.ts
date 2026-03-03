@@ -1,4 +1,3 @@
-// src/categories/categories.service.ts
 import {
   Injectable,
   NotFoundException,
@@ -6,7 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In, DataSource, Not } from 'typeorm';
+import { Repository, In, DataSource, Not, IsNull } from 'typeorm';
 
 import { CreateCategoryDto } from '../dto/categories/create-category.dto';
 import { GetCategoriesDto } from '../dto/categories/get-categories.dto';
@@ -15,6 +14,7 @@ import { UpdateCategoryDto } from '../dto/categories/update-category.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 import { Category } from '../entities/category.entity';
+import { Product } from '../entities/product.entity';
 import { cloudinaryFolders } from 'src/cloudinary/cloudinary.constants';
 
 @Injectable()
@@ -22,6 +22,8 @@ export class CategoriesService {
   constructor(
     @InjectRepository(Category)
     private categoryRepo: Repository<Category>,
+    @InjectRepository(Product)
+    private productRepo: Repository<Product>,
     private dataSource: DataSource,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
@@ -399,24 +401,96 @@ export class CategoriesService {
     });
   }
 
-  async getCategoryTree(): Promise<Category[]> {
-    const categories = await this.categoryRepo.find({
-      relations: ['children', 'parent'],
-      where: { isActive: true },
-      order: { name: 'ASC' },
+  async getCategoryTree(): Promise<any[]> {
+    // Fetch top 10 root categories
+    const rootCategories = await this.categoryRepo.find({
+      where: { isActive: true, parentId: IsNull() },
+      order: { productCount: 'DESC' },
+      take: 10,
+      select: ['id', 'name', 'slug', 'image', 'productCount'],
     });
 
-    // Build tree structure
-    const buildTree = (parentId: string | null): Category[] => {
-      return categories
-        .filter((category) => category.parentId === parentId)
-        .map((category) => ({
-          ...category,
-          children: buildTree(category.id),
-        }));
-    };
+    if (!rootCategories.length) return [];
 
-    return buildTree(null);
+    const rootIds = rootCategories.map((r) => r.id);
+
+    // Fetch all children of these roots (only one level deep)
+    const children = await this.categoryRepo.find({
+      where: { isActive: true, parentId: In(rootIds) },
+      order: { productCount: 'DESC' },
+      select: ['id', 'name', 'slug', 'image', 'parentId', 'productCount'],
+    });
+
+    const allCategoryIds = [...rootIds, ...children.map((c) => c.id)];
+
+    // Fetch top 3 products per category (root or child)
+    const productsRaw = await this.productRepo.query(
+      `
+    SELECT *
+    FROM (
+      SELECT
+        p.id,
+        p.name,
+        p.slug,
+        p.price,
+        p.image,
+        p."categoryId",
+        ROW_NUMBER() OVER (
+          PARTITION BY p."categoryId"
+          ORDER BY p."salesCount" DESC
+        ) as rank
+      FROM products p
+      WHERE p."isActive" = true
+      AND p."categoryId" = ANY($1)
+    ) ranked
+    WHERE rank <= 3
+    `,
+      [allCategoryIds],
+    );
+
+    // Group products by category
+    const productsByCategory: Record<string, any[]> = {};
+    for (const product of productsRaw) {
+      if (!productsByCategory[product.categoryId]) {
+        productsByCategory[product.categoryId] = [];
+      }
+      productsByCategory[product.categoryId].push({
+        name: product.name,
+        price: product.price,
+        slug: product.slug,
+        image: product.image,
+        rank: Number(product.rank),
+      });
+    }
+
+    // Map children to their parents
+    const childrenByParent: Record<string, any[]> = {};
+    for (const child of children) {
+      if (!childrenByParent[child.parentId]) {
+        childrenByParent[child.parentId] = [];
+      }
+      childrenByParent[child.parentId].push({
+        id: child.id,
+        name: child.name,
+        slug: child.slug,
+        image: child.image,
+        productCount: child.productCount,
+        products: productsByCategory[child.id] || [],
+      });
+    }
+
+    // Build final two-layer structure
+    const megaMenu = rootCategories.map((root) => ({
+      id: root.id,
+      name: root.name,
+      slug: root.slug,
+      image: root.image,
+      productCount: root.productCount,
+      products: productsByCategory[root.id] || [],
+      children: childrenByParent[root.id] || [],
+    }));
+
+    return megaMenu;
   }
 
   async getCategoryPath(id: string): Promise<Category[]> {
@@ -456,25 +530,42 @@ export class CategoriesService {
     return { updated: result.affected || 0 };
   }
 
-  async getTopCategories(limit = 6) {
-    const results = await this.categoryRepo
+  async getTopCategories(limit = 6, productsPerCategory = 4) {
+    const categories = await this.categoryRepo
       .createQueryBuilder('c')
       .leftJoin('c.products', 'p')
       .where('c.isActive = :isActive', { isActive: true })
-      .select([
-        'c.name AS name',
-        'c.slug AS slug',
-        'COUNT(p.id) AS "productCount"',
-      ])
+      .select(['c.id', 'c.name', 'c.slug', 'c.image', 'c.productCount'])
+      .loadRelationCountAndMap('c.productCount', 'c.products')
       .groupBy('c.id')
-      .orderBy('COUNT(p.id)', 'DESC')
-      .limit(limit)
-      .getRawMany();
+      .orderBy('c.productCount', 'DESC')
+      .take(limit)
+      .getMany();
 
-    return results.map((r) => ({
-      name: r.name,
-      slug: r.slug,
-      productCount: Number(r.productCount),
-    }));
+    const productsPromises = categories.map((category) =>
+      this.productRepo
+        .createQueryBuilder('p')
+        .where('p.categoryId = :categoryId', { categoryId: category.id })
+        .andWhere('p.isActive = :isActive', { isActive: true })
+        .select([
+          'p.name',
+          'p.slug',
+          'p.price',
+          'p.discountType',
+          'p.discountValue',
+          'p.image'
+        ])
+        .orderBy('p.createdAt', 'DESC')
+        .take(productsPerCategory)
+        .getMany(),
+    );
+
+    const productsPerCat = await Promise.all(productsPromises);
+
+    categories.forEach((category, index) => {
+      category.products = productsPerCat[index];
+    });
+
+    return categories;
   }
 }

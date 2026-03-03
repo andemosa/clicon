@@ -11,6 +11,9 @@ import {
   Heading,
   useDisclosure,
   chakra,
+  Skeleton,
+  Alert,
+  VStack,
 } from "@chakra-ui/react";
 import { Heart, ShoppingCart, Eye } from "lucide-react";
 import { useState } from "react";
@@ -18,83 +21,60 @@ import { Link as RouterLink } from "@tanstack/react-router";
 
 import QuickView from "./QuickView";
 
+import { useHomePageQuery } from "@/services/product/product.hooks";
+import type { Product } from "@/types";
+
 const Link = chakra(RouterLink);
 
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  discountPrice?: number;
-  badge?: string;
-  image: string;
-}
-
-const products: Product[] = [
-  {
-    id: 1,
-    name: "Sony DSCHX8 High Zoom Point & Shoot Camera",
-    price: 1200,
-    discountPrice: 720,
-    badge: "40% Off",
-    image: "/images/pad.png",
-  },
-  {
-    id: 2,
-    name: "Canon EOS 1500D DSLR Camera",
-    price: 550,
-    image: "/images/ps5.png",
-    badge: "Sold Out",
-  },
-  {
-    id: 3,
-    name: "Apple AirPods Pro (2nd Gen)",
-    price: 250,
-    discountPrice: 199,
-    image: "/images/earbuds.png",
-  },
-  {
-    id: 4,
-    name: "Samsung Galaxy Watch 6",
-    price: 320,
-    image: "/images/pad.png",
-  },
-  {
-    id: 5,
-    name: "Sony WH-1000XM5 Wireless Headphones",
-    price: 400,
-    discountPrice: 349,
-    image: "/images/earbuds.png",
-    badge: "12% Off",
-  },
-  {
-    id: 6,
-    name: "MacBook Pro 14-inch M3",
-    price: 2400,
-    image: "/images/pad.png",
-  },
-  {
-    id: 7,
-    name: "iPhone 15 Pro Max",
-    price: 1200,
-    discountPrice: 1100,
-    image: "/images/ps5.png",
-    badge: "Hot Deal",
-  },
-  {
-    id: 8,
-    name: "Logitech MX Master 3S Mouse",
-    price: 120,
-    image: "/images/pad.png",
-  },
-];
+const ProductCardSkeleton = () => {
+  return (
+    <Box borderWidth="1px" borderRadius="md" p={3}>
+      <Skeleton height="200px" borderRadius="md" />
+      <Stack mt={3} gap={2}>
+        <Skeleton height="14px" width="80%" />
+        <Skeleton height="16px" width="40%" />
+      </Stack>
+    </Box>
+  );
+};
 
 const ProductCard = ({ product }: { product: Product }) => {
+  const [imgError, setImgError] = useState(false);
   const [hovered, setHovered] = useState(false);
   const { open, onOpen, onClose } = useDisclosure();
 
+  const price = Number(product.price);
+  const discount = Number(product.discountValue ?? 0);
+
+  let finalPrice = price;
+
+  if (product.discountType === "percentage") {
+    finalPrice = price - (price * discount) / 100;
+  }
+
+  if (product.discountType === "fixed") {
+    finalPrice = price - discount;
+  }
+
+  const hasDiscount = product.discountType && discount > 0;
+
+  const getBadgeText = () => {
+    if (!hasDiscount) return null;
+
+    if (product.discountType === "percentage") {
+      return `${discount}% OFF`;
+    }
+
+    if (product.discountType === "fixed") {
+      return `$${discount} OFF`;
+    }
+
+    return null;
+  };
+
   return (
     <>
-      <Box
+      <VStack
         borderWidth="1px"
         borderRadius="md"
         overflow="hidden"
@@ -105,32 +85,53 @@ const ProductCard = ({ product }: { product: Product }) => {
         onMouseLeave={() => setHovered(false)}
         transition="all 0.2s ease-in-out"
       >
-        <Box position="relative" role="group">
-          <Image
-            src={product.image}
-            alt={product.name}
-            borderRadius="md"
-            w="full"
-          />
+        <VStack position="relative" role="group" flex={1} w={"full"}>
+          <Box
+            w="100%"
+            h="200px"
+            bg={!product.image || imgError ? "gray.200" : "transparent"}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            flex={1}
+          >
+            {product.image && !imgError ? (
+              <Image
+                src={product.image}
+                alt={product.name}
+                objectFit="cover"
+                w="100%"
+                h="100%"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <Flex
+                w={"full"}
+                h={"full"}
+                alignItems={"center"}
+                justifyContent={"center"}
+              >
+                <Text color="gray.500" fontSize="sm">
+                  No Image
+                </Text>
+              </Flex>
+            )}
+          </Box>
 
-          {product.badge && (
+          {getBadgeText() && (
             <Badge
               position="absolute"
               top={2}
               left={2}
-              colorScheme={
-                product.badge.toLowerCase().includes("off")
-                  ? "green"
-                  : product.badge.toLowerCase().includes("sold")
-                    ? "red"
-                    : "orange"
-              }
+              colorScheme="green"
               fontSize="xs"
               px={2}
               py={1}
               borderRadius="md"
+              bg={"blue.500"}
+              color={"white"}
             >
-              {product.badge}
+              {getBadgeText()}
             </Badge>
           )}
 
@@ -164,35 +165,87 @@ const ProductCard = ({ product }: { product: Product }) => {
               </IconButton>
             </HStack>
           ) : null}
-        </Box>
+        </VStack>
 
         {/* Product details */}
-        <Stack gap={1} mt={3}>
-          <Text fontSize="sm">{product.name}</Text>
-          <HStack gap={2}>
-            {product.discountPrice ? (
-              <>
+        <Link
+          to={`/products/${product.slug}`}
+          _hover={{ textDecoration: "none" }}
+          w={"full"}
+          mt={"auto"}
+        >
+          <Stack gap={1} w={"full"}>
+            <Text fontSize="sm" lineClamp={1}>
+              {product.name}
+            </Text>
+            <HStack gap={2}>
+              {hasDiscount ? (
+                <>
+                  <Text fontSize="md" color="blue.500" fontWeight="semibold">
+                    ${finalPrice.toFixed(2)}
+                  </Text>
+                  <Text
+                    as="s"
+                    fontSize="sm"
+                    color="gray.500"
+                    fontWeight="medium"
+                  >
+                    ${price.toFixed(2)}
+                  </Text>
+                </>
+              ) : (
                 <Text fontSize="md" color="blue.500" fontWeight="semibold">
-                  ${product.discountPrice}
+                  ${price.toFixed(2)}
                 </Text>
-                <Text as="s" fontSize="sm" color="gray.500" fontWeight="medium">
-                  ${product.price}
-                </Text>
-              </>
-            ) : (
-              <Text fontSize="md" color="blue.500" fontWeight="semibold">
-                ${product.price}
-              </Text>
-            )}
-          </HStack>
-        </Stack>
-      </Box>
-      <QuickView isOpen={open} onClose={onClose} />
+              )}
+            </HStack>
+          </Stack>
+        </Link>
+      </VStack>
+      {open ? (
+        <QuickView isOpen={open} onClose={onClose} product={product} />
+      ) : null}
     </>
   );
 };
 
 const BestDeals = () => {
+  const { data, isLoading, isError } = useHomePageQuery();
+
+  if (isLoading) {
+    return (
+      <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} gap={6} mt={4}>
+        {Array.from({ length: 8 }).map((_, i) => (
+          <ProductCardSkeleton key={i} />
+        ))}
+      </SimpleGrid>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Box px={{ base: 6, lg: 12 }} py={{ base: 6, lg: 12 }}>
+        <Alert.Root status="error" mt={4}>
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Title>Error occurred</Alert.Title>
+            <Alert.Description>Failed to fetch products</Alert.Description>
+          </Alert.Content>
+        </Alert.Root>
+      </Box>
+    );
+  }
+
+  const products = data?.bestSellers ?? [];
+
+  if (!products.length) {
+    return (
+      <Box px={6} py={12} textAlign="center">
+        <Text>No deals available at the moment.</Text>
+      </Box>
+    );
+  }
+
   return (
     <Box
       px={{ base: 6, lg: 12 }}
@@ -207,20 +260,7 @@ const BestDeals = () => {
           gap={{ base: 0, sm: 4 }}
           direction={{ base: "column", sm: "row" }}
         >
-          <Heading fontSize={{ base: "md", sm: "lg" }}>Best Deals</Heading>
-          <Flex fontSize={{ base: "xs", sm: "sm" }} align={"center"} gap={2}>
-            <Text>Deals ends in</Text>
-            <Badge
-              bg={"yellow.300"}
-              color={"gray.900"}
-              px={2}
-              py={1}
-              rounded="md"
-              size={{ base: "xs", sm: "sm" }}
-            >
-              16d : 21h : 57m : 23s
-            </Badge>
-          </Flex>
+          <Heading fontSize={{ base: "md", sm: "lg" }}>Best Sellers</Heading>
         </Flex>
         <Link href={"/shop"} _focus={{ boxShadow: "none", outline: "none" }}>
           <Text fontSize={{ base: "xs", sm: "sm" }} color={"blue.500"}>

@@ -69,6 +69,11 @@ export class CategoriesController {
     });
   }
 
+  @Get('homepage/categories')
+  async homepage() {
+    return this.categoriesService.getTopCategories();
+  }
+
   @Get(':id/path')
   getPath(@Param('id', ParseUUIDPipe) id: string) {
     return this.categoriesService.getCategoryPath(id);

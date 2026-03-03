@@ -15,7 +15,7 @@ function RouteComponent() {
         items={[
           { label: "Home", href: "/", icon: <Home size={14} /> },
           { label: "Shop", href: "/shop" },
-          { label: "Trousers", isCurrent: true },
+          { label: "Product", isCurrent: true },
         ]}
       />
       <ProductPage />

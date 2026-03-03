@@ -2,6 +2,7 @@ import { Api } from "@/utils/api";
 
 import type {
   ApiError,
+  Category,
   CreateCategoryReq,
   CreateCategoryRes,
   GetCategoriesParams,
@@ -28,12 +29,12 @@ export class CategoryService {
   }
 
   static async categories(
-    params?: GetCategoriesParams
+    params?: GetCategoriesParams,
   ): Promise<GetCategoriesRes> {
     const searchParams = new URLSearchParams(params as Record<string, string>);
     try {
       const res = await Api.getReq<GetCategoriesRes>(
-        `/categories?${searchParams}`
+        `/categories?${searchParams}`,
       );
       return res.data;
     } catch (err) {
@@ -51,7 +52,7 @@ export class CategoryService {
     const searchParams = new URLSearchParams(params as Record<string, string>);
     try {
       const res = await Api.getReq<GetCategoryRes>(
-        `/categories/slug/${slug}?${searchParams}`
+        `/categories/slug/${slug}?${searchParams}`,
       );
       return res.data;
     } catch (err) {
@@ -84,7 +85,27 @@ export class CategoryService {
   }): Promise<CreateCategoryRes> {
     try {
       const res = await Api.deleteReq<CreateCategoryRes>(
-        `/categories/slug/${slug}`
+        `/categories/slug/${slug}`,
+      );
+      return res.data;
+    } catch (err) {
+      throw err as ApiError;
+    }
+  }
+
+  static async categoryTree(): Promise<Category[]> {
+    try {
+      const res = await Api.getReq<Category[]>(`/categories/tree`);
+      return res.data;
+    } catch (err) {
+      throw err as ApiError;
+    }
+  }
+
+  static async homepageCategories(): Promise<Category[]> {
+    try {
+      const res = await Api.getReq<Category[]>(
+        `/categories/homepage/categories`,
       );
       return res.data;
     } catch (err) {

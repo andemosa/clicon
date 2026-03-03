@@ -20,10 +20,11 @@ import { useProductsQuery } from "@/services/product/product.hooks";
 
 const AdminProductsPage = () => {
   const [page, setPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(6);
   const [search, setSearch] = useState("");
 
   const { data, isFetching, isError } = useProductsQuery({
-    limit: 6,
+    limit: itemsPerPage,
     page,
     search,
   });
@@ -116,10 +117,12 @@ const AdminProductsPage = () => {
     return (
       <ProductDisplay
         search={search}
-        setSearch={setSearch}
         data={data}
         page={page}
+        itemsPerPage={itemsPerPage}
+        setSearch={setSearch}
         setPage={setPage}
+        setItemsPerPage={setItemsPerPage}
       />
     );
 

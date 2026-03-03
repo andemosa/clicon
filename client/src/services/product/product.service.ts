@@ -8,6 +8,9 @@ import type {
   GetProductsRes,
   GetProductRes,
   UpdateProductReq,
+  HomePageRes,
+  Category,
+  Tag,
 } from "@/types";
 
 export class ProductService {
@@ -27,14 +30,10 @@ export class ProductService {
     }
   }
 
-  static async products(
-    params?: GetProductsParams
-  ): Promise<GetProductsRes> {
+  static async products(params?: GetProductsParams): Promise<GetProductsRes> {
     const searchParams = new URLSearchParams(params as Record<string, string>);
     try {
-      const res = await Api.getReq<GetProductsRes>(
-        `/products?${searchParams}`
-      );
+      const res = await Api.getReq<GetProductsRes>(`/products?${searchParams}`);
       return res.data;
     } catch (err) {
       throw err as ApiError;
@@ -51,7 +50,7 @@ export class ProductService {
     const searchParams = new URLSearchParams(params as Record<string, string>);
     try {
       const res = await Api.getReq<GetProductRes>(
-        `/products/slug/${slug}?${searchParams}`
+        `/products/slug/${slug}?${searchParams}`,
       );
       return res.data;
     } catch (err) {
@@ -83,9 +82,31 @@ export class ProductService {
     id: string;
   }): Promise<CreateProductRes> {
     try {
-      const res = await Api.deleteReq<CreateProductRes>(
-        `/products/${id}`
-      );
+      const res = await Api.deleteReq<CreateProductRes>(`/products/${id}`);
+      return res.data;
+    } catch (err) {
+      throw err as ApiError;
+    }
+  }
+
+  static async getHomePage(): Promise<HomePageRes> {
+    try {
+      const res = await Api.getReq<HomePageRes>("/products/homepage/products");
+      return res.data;
+    } catch (err) {
+      throw err as ApiError;
+    }
+  }
+
+  static async getFooterTop(): Promise<{
+    categories: Category[];
+    tags: Tag[];
+  }> {
+    try {
+      const res = await Api.getReq<{
+        categories: Category[];
+        tags: Tag[];
+      }>("/products/footer/top");
       return res.data;
     } catch (err) {
       throw err as ApiError;

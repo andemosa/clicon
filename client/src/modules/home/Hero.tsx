@@ -2,53 +2,27 @@ import {
   Box,
   Flex,
   Text,
-  Button,
-  Image,
   GridItem,
   SimpleGrid,
-  Badge,
   VStack,
-  Separator,
   Stack,
+  Skeleton,
+  SkeletonCircle,
+  Alert,
+  Separator,
 } from "@chakra-ui/react";
 import { Global } from "@emotion/react";
 import { Truck, Trophy, Lock, Headphones } from "lucide-react";
-
 import Slider from "react-slick";
 
-type Slide = {
-  eyebrow: string;
-  title: string;
-  copy: string;
-  price: string;
-  img: string;
-};
+import { CarouselItem, FirstItem, SecondItem } from "./Items";
 
-const slides: Slide[] = [
-  {
-    eyebrow: "THE BEST PLACE TO PLAY",
-    title: "Xbox Consoles",
-    copy: "Save up to 50% on select Xbox games. Get 3 months of PC Game Pass for $2 USD.",
-    price: "$299",
-    img: "/images/ps5.png",
-  },
-  {
-    eyebrow: "LIMITED DEAL",
-    title: "Xbox Series S Bundle",
-    copy: "Extra controller + 1 month Game Pass included.",
-    price: "$349",
-    img: "/images/earbuds.png",
-  },
-  {
-    eyebrow: "NEW ARRIVAL",
-    title: "Wireless Elite Controller",
-    copy: "Pro-level precision and interchangeable components.",
-    price: "$169",
-    img: "/images/ps5.png",
-  },
-];
+import { useHomePageQuery } from "@/services/product/product.hooks";
+import type { Product } from "@/types";
 
 const Hero = () => {
+  const { data, isLoading, isError } = useHomePageQuery();
+
   const settings = {
     dots: true,
     infinite: true,
@@ -60,6 +34,71 @@ const Hero = () => {
     arrows: false,
   };
 
+  if (isLoading) {
+    return (
+      <Box px={{ base: 6, lg: 12 }} py={{ base: 6, lg: 12 }}>
+        <SimpleGrid columns={{ base: 1, lg: 3 }} gap={6}>
+          {/* Carousel Skeleton */}
+          <Box bg="gray.50" p={10} rounded="xs">
+            <Stack gap={6}>
+              <Skeleton height="20px" width="40%" />
+              <Skeleton height="30px" width="70%" />
+              <Skeleton height="20px" width="90%" />
+              <Skeleton height="40px" width="150px" />
+            </Stack>
+          </Box>
+
+          <Stack gap={6}>
+            <Flex gap={4} align="center">
+              <SkeletonCircle size="12" />
+              <Stack flex="1">
+                <Skeleton height="5" />
+                <Skeleton height="5" width="80%" />
+              </Stack>
+            </Flex>
+
+            <Flex gap={4} align="center">
+              <SkeletonCircle size="12" />
+              <Stack flex="1">
+                <Skeleton height="5" />
+                <Skeleton height="5" width="80%" />
+              </Stack>
+            </Flex>
+          </Stack>
+        </SimpleGrid>
+      </Box>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Box px={{ base: 6, lg: 12 }} py={{ base: 6, lg: 12 }}>
+        <Alert.Root status="error" mt={4}>
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Title>Error occurred</Alert.Title>
+            <Alert.Description>Failed to fetch products</Alert.Description>
+          </Alert.Content>
+        </Alert.Root>
+      </Box>
+    );
+  }
+
+  const bestDeals = data?.bestDeals ?? [];
+  const discountedProducts = bestDeals.filter(
+    (item: Product) => item.discountType && Number(item.discountValue) > 0,
+  );
+
+  const firstDiscounted = discountedProducts[0];
+
+  const remainingProducts = bestDeals.filter(
+    (item: Product) => item.id !== firstDiscounted?.id,
+  );
+
+  const sideCards = [firstDiscounted, remainingProducts[0]].filter(Boolean);
+
+  const carouselItems = remainingProducts.slice(1);
+
   return (
     <Box
       px={{ base: 6, lg: 12 }}
@@ -68,10 +107,7 @@ const Hero = () => {
       mx="auto"
       w="full"
     >
-      <SimpleGrid
-        columns={{ base: 1, md: 5, lg: 3 }}
-        gap={{ base: 6, md: 3, lg: 6 }}
-      >
+      <SimpleGrid columns={{ base: 1, md: 5, lg: 3 }} gap={6}>
         <GridItem colSpan={{ base: 1, md: 3, lg: 2 }}>
           <Box bg="gray.50" rounded="xs" overflow="hidden" position="relative">
             <Global
@@ -96,59 +132,10 @@ const Hero = () => {
                 },
               }}
             />
-            <Slider {...settings}>
-              {slides.map((s, i) => (
-                <Box key={i}>
-                  <Flex
-                    p={{ base: 6, md: 10 }}
-                    align="center"
-                    justify="space-between"
-                    gap={{ base: 6, md: 10 }}
-                    direction={{ base: "column", md: "row" }}
-                    minH={{ base: "auto", md: "380px" }}
-                  >
-                    <VStack align="start" gap={4} maxW={{ md: "56%" }}>
-                      <Text
-                        fontSize="sm"
-                        color="blue.500"
-                        fontWeight="semibold"
-                      >
-                        {s.eyebrow}
-                      </Text>
-                      <Text
-                        fontSize={{ base: "2xl", md: "3xl" }}
-                        fontWeight="bold"
-                      >
-                        {s.title}
-                      </Text>
-                      <Text color="gray.600">{s.copy}</Text>
-                      <Button colorScheme="orange" size="md" alignSelf="start">
-                        Shop Now
-                      </Button>
-                    </VStack>
 
-                    <Box position="relative">
-                      <Image
-                        src={s.img}
-                        alt={s.title}
-                        boxSize={{ base: "240px", md: "280px" }}
-                        objectFit="contain"
-                      />
-                      <Badge
-                        position="absolute"
-                        top="-2"
-                        right="-3"
-                        rounded="full"
-                        px="4"
-                        py="3"
-                        fontSize="lg"
-                        colorScheme="blue"
-                      >
-                        {s.price}
-                      </Badge>
-                    </Box>
-                  </Flex>
-                </Box>
+            <Slider {...settings}>
+              {carouselItems.map((item: Product) => (
+                <CarouselItem key={item.slug} item={item} />
               ))}
             </Slider>
           </Box>
@@ -156,78 +143,13 @@ const Hero = () => {
 
         <GridItem colSpan={{ base: 1, md: 2, lg: 1 }}>
           <Flex direction={"column"} gap={{ base: 6, md: 3, lg: 4 }} h={"full"}>
-            <Flex
-              bg="black"
-              color="white"
-              p={{ base: 5, md: 6 }}
-              rounded="xs"
-              w="full"
-              justify="space-between"
-              align="center"
-              flex={1}
-            >
-              <VStack align="start" gap={2}>
-                <Text fontSize="sm" color="yellow.400" fontWeight="semibold">
-                  SUMMER SALES
-                </Text>
-                <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="bold">
-                  New Google Pixel 6 Pro
-                </Text>
-                <Button colorScheme="orange" size="sm">
-                  Shop Now
-                </Button>
-              </VStack>
-              <Box position="relative">
-                <Image
-                  src="/images/pad.png"
-                  alt="Google Pixel"
-                  boxSize="120px"
-                />
-                <Badge
-                  bg="yellow.400"
-                  color="black"
-                  position="absolute"
-                  top="0"
-                  left="-3"
-                  rounded="md"
-                  px="2"
-                >
-                  29% OFF
-                </Badge>
-              </Box>
-            </Flex>
+            <FirstItem item={sideCards[0]} />
 
-            <Flex
-              bg="gray.50"
-              p={{ base: 5, md: 6 }}
-              rounded="xs"
-              w="full"
-              justify="space-between"
-              align="center"
-              flex={1}
-            >
-              <Image
-                src="/images/earbuds.png"
-                alt="Xiaomi FlipBuds"
-                boxSize="120px"
-              />
-              <VStack align="start" gap={2}>
-                <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="bold">
-                  Xiaomi FlipBuds Pro
-                </Text>
-                <Text color="blue.500" fontWeight="semibold">
-                  $299 USD
-                </Text>
-                <Button colorScheme="orange" size="sm">
-                  Shop Now
-                </Button>
-              </VStack>
-            </Flex>
+            <SecondItem item={sideCards[1]} />
           </Flex>
         </GridItem>
       </SimpleGrid>
 
-      {/* Feature boxes */}
       <SimpleGrid
         bg="white"
         mt={10}

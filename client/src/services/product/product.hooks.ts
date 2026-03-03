@@ -16,10 +16,13 @@ import type {
   GetProductRes,
   UpdateProductReq,
   GetProductsParams,
+  HomePageRes,
+  Category,
+  Tag,
 } from "@/types";
 
 export const useCreateProduct = (
-  options?: UseMutationOptions<CreateProductRes, ApiError, CreateProductReq>
+  options?: UseMutationOptions<CreateProductRes, ApiError, CreateProductReq>,
 ) => {
   return useMutation<CreateProductRes, ApiError, CreateProductReq>({
     mutationKey: queryKeys.createProduct,
@@ -32,7 +35,7 @@ export const useCreateProduct = (
 
 export const useProductsQuery = (
   params?: GetProductsParams,
-  options?: UseQueryOptions<GetProductsRes, ApiError>
+  options?: UseQueryOptions<GetProductsRes, ApiError>,
 ) => {
   return useQuery<GetProductsRes, ApiError>({
     queryKey: [...queryKeys.getProducts, params],
@@ -44,7 +47,7 @@ export const useProductsQuery = (
 export const useProductQuery = (
   slug: string,
   params?: GetProductsParams,
-  options?: UseQueryOptions<GetProductRes, ApiError>
+  options?: UseQueryOptions<GetProductRes, ApiError>,
 ) => {
   return useQuery<GetProductRes, ApiError>({
     queryKey: queryKeys.getProduct(slug, params),
@@ -59,7 +62,7 @@ export const useProductQuery = (
 
 export const useUpdateProduct = (
   id: string,
-  options?: UseMutationOptions<CreateProductRes, ApiError, UpdateProductReq>
+  options?: UseMutationOptions<CreateProductRes, ApiError, UpdateProductReq>,
 ) => {
   return useMutation<CreateProductRes, ApiError, UpdateProductReq>({
     mutationKey: queryKeys.updateProduct(id),
@@ -72,13 +75,45 @@ export const useUpdateProduct = (
 
 export const useDeleteProduct = (
   id: string,
-  options?: UseMutationOptions<CreateProductRes, ApiError>
+  options?: UseMutationOptions<CreateProductRes, ApiError>,
 ) => {
   return useMutation<CreateProductRes, ApiError>({
     mutationKey: queryKeys.deleteProduct(id),
     mutationFn: async () => {
       return await ProductService.deleteProduct({ id });
     },
+    ...options,
+  });
+};
+
+export const useHomePageQuery = (
+  options?: UseQueryOptions<HomePageRes, ApiError>,
+) => {
+  return useQuery<HomePageRes, ApiError>({
+    queryKey: queryKeys.getHomepageProducts,
+    queryFn: () => ProductService.getHomePage(),
+    ...options,
+  });
+};
+
+export const useFooterTopQuery = (
+  options?: UseQueryOptions<
+    {
+      categories: Category[];
+      tags: Tag[];
+    },
+    ApiError
+  >,
+) => {
+  return useQuery<
+    {
+      categories: Category[];
+      tags: Tag[];
+    },
+    ApiError
+  >({
+    queryKey: queryKeys.getFooterTop,
+    queryFn: () => ProductService.getFooterTop(),
     ...options,
   });
 };

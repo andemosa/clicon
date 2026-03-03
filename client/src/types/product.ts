@@ -2,7 +2,7 @@ type BaseProduct = {
   name: string;
   slug?: string;
   description?: string;
-  isActive: boolean;
+  isActive?: boolean;
   price: number;
   stock: number;
   discountType?: string;
@@ -24,6 +24,8 @@ type Product = BaseProduct & {
   id: string;
   image?: string | null;
   tags?: TagResponse[] | null;
+  salesCount: number;
+  averageRating: number;
   category: CategoryResponse;
   createdAt: string;
   updatedAt: string;
@@ -51,6 +53,12 @@ type GetProductsRes = {
 
 type GetProductRes = Product;
 
+type HomePageRes = {
+  bestDeals: Product[];
+  bestSellers: Product[];
+  topRated: Product[];
+};
+
 type UpdateProductReq = BaseProduct & {
   categoryId?: string;
   image?: File | null;
@@ -74,5 +82,6 @@ export type {
   GetProductsRes,
   GetProductRes,
   GetProductsParams,
+  HomePageRes,
   Product,
 };

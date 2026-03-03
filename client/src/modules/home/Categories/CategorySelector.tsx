@@ -1,8 +1,9 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Slider from "react-slick";
-import { Box, Text, VStack, IconButton, Image } from "@chakra-ui/react";
+import { Box, Text, VStack, IconButton, Image, Flex } from "@chakra-ui/react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import type { Category } from ".";
+
+import type { Category } from "@/types";
 
 const PrevArrow = ({ onClick }: { onClick?: () => void }) => (
   <IconButton
@@ -75,30 +76,12 @@ const CategoryCarousel = ({
       <Box position="relative">
         <Slider {...settings} ref={slider}>
           {categories.map((cat) => (
-            <Box key={cat.label} px={2}>
-              <VStack
-                borderWidth="1px"
-                borderRadius="lg"
-                py={4}
-                px={3}
-                gap={2}
-                h="160px"
-                justify="center"
-                cursor="pointer"
-                bg={selected.label === cat.label ? "orange.50" : "white"}
-                borderColor={
-                  selected.label === cat.label ? "orange.400" : "gray.200"
-                }
-                onClick={() => onSelect(cat)}
-                transition="all 0.2s ease"
-                _hover={{ borderColor: "orange.300" }}
-              >
-                <Image src={cat.img} alt={cat.label} boxSize="60px" />
-                <Text fontSize="sm" textAlign="center" fontWeight="medium">
-                  {cat.label}
-                </Text>
-              </VStack>
-            </Box>
+            <CatCard
+              cat={cat}
+              key={cat.slug}
+              selected={selected}
+              onSelect={onSelect}
+            />
           ))}
         </Slider>
 
@@ -110,3 +93,69 @@ const CategoryCarousel = ({
 };
 
 export default CategoryCarousel;
+
+const CatCard = ({
+  cat,
+  selected,
+  onSelect,
+}: {
+  cat: Category;
+  selected: Category;
+  onSelect: (cat: Category) => void;
+}) => {
+  const [imgError, setImgError] = useState(false);
+
+  return (
+    <Box key={cat.id} px={2}>
+      <VStack
+        borderWidth="1px"
+        borderRadius="lg"
+        py={4}
+        px={3}
+        gap={2}
+        h="160px"
+        justify="center"
+        cursor="pointer"
+        bg={selected.id === cat.id ? "orange.50" : "white"}
+        borderColor={selected.id === cat.id ? "orange.400" : "gray.200"}
+        onClick={() => onSelect(cat)}
+        transition="all 0.2s ease"
+        _hover={{ borderColor: "orange.300" }}
+      >
+        <Box
+          w="100%"
+          h="100px"
+          bg={!cat.image || imgError ? "gray.200" : "transparent"}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          {cat.image && !imgError ? (
+            <Image
+              src={cat.image}
+              alt={cat.name}
+              objectFit="cover"
+              w="100%"
+              h="100%"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <Flex
+              w={"full"}
+              h={"full"}
+              alignItems={"center"}
+              justifyContent={"center"}
+            >
+              <Text color="gray.500" fontSize="sm">
+                No Image
+              </Text>
+            </Flex>
+          )}
+        </Box>
+        <Text fontSize="sm" textAlign="center" fontWeight="medium">
+          {cat.name}
+        </Text>
+      </VStack>
+    </Box>
+  );
+};

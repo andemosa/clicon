@@ -17,12 +17,13 @@ import { useTagsQuery } from "@/services/tag/tag.hooks";
 
 const AdminTagsPage = () => {
   const [page, setPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("name");
-  const [order, setOrder] = useState<"asc" | "desc">("desc");
+  const [order, setOrder] = useState<"asc" | "desc">("asc");
 
   const { data, isFetching, isError } = useTagsQuery({
-    limit: 100,
+    limit: itemsPerPage,
     page,
     search,
     sort,
@@ -94,6 +95,8 @@ const AdminTagsPage = () => {
       setPage={setPage}
       order={order}
       sort={sort}
+      itemsPerPage={itemsPerPage}
+      setItemsPerPage={setItemsPerPage}
       setOrder={setOrder}
       setSort={setSort}
     />

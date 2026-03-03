@@ -26,10 +26,12 @@ const TagDisplay = ({
   isFetching,
   order,
   sort,
+  itemsPerPage,
   setOrder,
   setSort,
   setPage,
   setSearch,
+  setItemsPerPage,
 }: {
   data: any;
   page: number;
@@ -37,10 +39,12 @@ const TagDisplay = ({
   isFetching: boolean;
   order: "desc" | "asc";
   sort: string;
+  itemsPerPage: number;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
   setPage: React.Dispatch<React.SetStateAction<number>>;
   setOrder: React.Dispatch<React.SetStateAction<"desc" | "asc">>;
   setSort: React.Dispatch<React.SetStateAction<string>>;
+  setItemsPerPage: React.Dispatch<React.SetStateAction<number>>;
 }) => {
   const { open, onOpen, onClose } = useDisclosure();
   const [searchTerm, setSearchTerm] = useState(search);
@@ -164,14 +168,32 @@ const TagDisplay = ({
         </Stack>
       )}
 
-      {data?.meta?.total <= data?.meta?.limit ? null : (
+      <Flex
+        gap={{ base: 2, sm: 4, lg: 6 }}
+        alignItems={"center"}
+        justifyContent={"center"}
+      >
         <PaginationComp
           page={page}
           setPage={setPage}
-          totalItems={data?.meta?.total}
-          itemsPerPage={data?.meta?.limit}
+          totalItems={data.meta.total}
+          itemsPerPage={itemsPerPage}
         />
-      )}
+        <Flex gap={1} alignItems={"center"}>
+          <Text display={{ base: "none", sm: "block" }}>Items per page:</Text>
+          <NativeSelect.Root size="sm" width={"60px"}>
+            <NativeSelect.Field
+              value={itemsPerPage}
+              onChange={(e) => setItemsPerPage(+e.currentTarget.value)}
+            >
+              <option value="6">6</option>
+              <option value="12">12</option>
+              <option value="48">48</option>
+            </NativeSelect.Field>
+            <NativeSelect.Indicator />
+          </NativeSelect.Root>
+        </Flex>
+      </Flex>
 
       {open ? (
         <TagModal open={open} closeModal={onClose} type={"new"} key={"new"} />

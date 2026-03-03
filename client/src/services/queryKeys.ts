@@ -23,6 +23,7 @@ export const queryKeys = {
 
   createCategory: ["createCategory"],
   getCategories: ["getCategories"],
+  getCategoryTree: ["category-tree"],
   getCategory: (slug: string, params?: GetCategoriesParams) => [
     "getCategory",
     slug,
@@ -30,6 +31,7 @@ export const queryKeys = {
   ],
   updateCategory: (slug: string) => ["updateCategory", slug],
   deleteCategory: (slug: string) => ["deleteCategory", slug],
+  getHomepageCategories: ["getHomepageCategories"],
 
   createTag: ["createTag"],
   getTags: ["getTags"],
@@ -45,4 +47,6 @@ export const queryKeys = {
   ],
   updateProduct: (slug: string) => ["updateProduct", slug],
   deleteProduct: (slug: string) => ["deleteProduct", slug],
+  getHomepageProducts: ["getHomepageProducts"],
+  getFooterTop: ["getFooterTop"],
 };

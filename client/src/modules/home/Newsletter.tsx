@@ -11,7 +11,7 @@ import {
 
 const Newsletter = () => {
   return (
-    <Box bg="blue.700" py={10} px={6} textAlign={"center"}>
+    <Box bg="blue.700" py={10} px={6} textAlign={"center"} mt={6}>
       <VStack mx={"auto"} color={"white"} gap={4} maxW={"1440px"}>
         <Box>
           <Heading fontSize={{ base: "lg", md: 'xl', lg: "2xl" }}>

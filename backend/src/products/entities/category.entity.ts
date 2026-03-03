@@ -35,6 +35,7 @@ export class Category {
   @Column({ default: true })
   isActive: boolean;
 
+  @Index()
   @Column({ nullable: true })
   parentId: string;
 

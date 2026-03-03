@@ -6,12 +6,23 @@ type BaseCategory = {
   isActive: boolean;
 };
 
+type TopProduct = {
+  name: string;
+  price: number;
+  slug: string;
+  image: string;
+  rank?: string;
+  discountType?: string;
+  discountValue?: number;
+};
+
 type Category = BaseCategory & {
   id: string;
   productCount: number;
   image?: string | null;
   parent?: Category | null;
-  children?: Category[];
+  children: Category[];
+  products?: TopProduct[];
   createdAt: string;
   updatedAt: string;
 };
@@ -37,8 +48,8 @@ type GetCategoriesRes = {
 type GetCategoryRes = Category;
 
 type UpdateCategoryReq = Partial<CreateCategoryReq> & {
-  deleteImage?: boolean
-}
+  deleteImage?: boolean;
+};
 
 type GetCategoriesParams = {
   limit?: number;
@@ -49,8 +60,8 @@ type GetCategoriesParams = {
   isActive?: boolean;
   includeChildren?: boolean;
   includeProducts?: boolean;
-  excludeId?: string
-}
+  excludeId?: string;
+};
 
 export type {
   CreateCategoryReq,

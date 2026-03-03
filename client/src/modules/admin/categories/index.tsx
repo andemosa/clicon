@@ -20,12 +20,13 @@ import { useCategoriesQuery } from "@/services/category/category.hooks";
 
 const AdminCategoriesPage = () => {
   const [page, setPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(6);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("createdAt");
   const [order, setOrder] = useState<"asc" | "desc">("desc");
 
   const { data, isFetching, isError } = useCategoriesQuery({
-    limit: 6,
+    limit: itemsPerPage,
     page,
     search,
     sort,
@@ -125,9 +126,11 @@ const AdminCategoriesPage = () => {
         page={page}
         order={order}
         sort={sort}
+        itemsPerPage={itemsPerPage}
         setPage={setPage}
         setOrder={setOrder}
         setSort={setSort}
+        setItemsPerPage={setItemsPerPage}
       />
     );
 

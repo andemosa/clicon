@@ -16,10 +16,11 @@ import type {
   GetCategoryRes,
   UpdateCategoryReq,
   GetCategoriesParams,
+  Category,
 } from "@/types";
 
 export const useCreateCategory = (
-  options?: UseMutationOptions<CreateCategoryRes, ApiError, CreateCategoryReq>
+  options?: UseMutationOptions<CreateCategoryRes, ApiError, CreateCategoryReq>,
 ) => {
   return useMutation<CreateCategoryRes, ApiError, CreateCategoryReq>({
     mutationKey: queryKeys.createCategory,
@@ -32,7 +33,7 @@ export const useCreateCategory = (
 
 export const useCategoriesQuery = (
   params?: GetCategoriesParams,
-  options?: UseQueryOptions<GetCategoriesRes, ApiError>
+  options?: UseQueryOptions<GetCategoriesRes, ApiError>,
 ) => {
   return useQuery<GetCategoriesRes, ApiError>({
     queryKey: [...queryKeys.getCategories, params],
@@ -44,7 +45,7 @@ export const useCategoriesQuery = (
 export const useCategoryQuery = (
   slug: string,
   params?: GetCategoriesParams,
-  options?: UseQueryOptions<GetCategoryRes, ApiError>
+  options?: UseQueryOptions<GetCategoryRes, ApiError>,
 ) => {
   return useQuery<GetCategoryRes, ApiError>({
     queryKey: queryKeys.getCategory(slug, params),
@@ -59,7 +60,7 @@ export const useCategoryQuery = (
 
 export const useUpdateCategory = (
   slug: string,
-  options?: UseMutationOptions<CreateCategoryRes, ApiError, UpdateCategoryReq>
+  options?: UseMutationOptions<CreateCategoryRes, ApiError, UpdateCategoryReq>,
 ) => {
   return useMutation<CreateCategoryRes, ApiError, UpdateCategoryReq>({
     mutationKey: queryKeys.updateCategory(slug),
@@ -72,13 +73,36 @@ export const useUpdateCategory = (
 
 export const useDeleteCategory = (
   slug: string,
-  options?: UseMutationOptions<CreateCategoryRes, ApiError>
+  options?: UseMutationOptions<CreateCategoryRes, ApiError>,
 ) => {
   return useMutation<CreateCategoryRes, ApiError>({
     mutationKey: queryKeys.deleteCategory(slug),
     mutationFn: async () => {
       return await CategoryService.deleteCategory({ slug });
     },
+    ...options,
+  });
+};
+
+export const useCategoryTreeQuery = (
+  options?: UseQueryOptions<Category[], ApiError>,
+) => {
+  return useQuery<Category[], ApiError>({
+    queryKey: queryKeys.getCategoryTree,
+    queryFn: () => CategoryService.categoryTree(),
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnWindowFocus: false,
+    ...options,
+  });
+};
+
+export const useHomepageCategoriesQuery = (
+  options?: UseQueryOptions<Category[], ApiError>,
+) => {
+  return useQuery<Category[], ApiError>({
+    queryKey: queryKeys.getHomepageCategories,
+    queryFn: () => CategoryService.homepageCategories(),
     ...options,
   });
 };

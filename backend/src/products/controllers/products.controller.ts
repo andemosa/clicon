@@ -55,6 +55,16 @@ export class ProductsController {
   findBySlug(@Param('slug') slug: string) {
     return this.svc.findBySlug(slug);
   }
+  
+  @Get('homepage/products')
+  async homepage() {
+    return this.svc.getHomepageData();
+  }
+
+  @Get('footer/top')
+  async footer() {
+    return this.svc.getFooterData();
+  }
 
   @Get()
   async findAll(@Query() query: GetProductsDto) {

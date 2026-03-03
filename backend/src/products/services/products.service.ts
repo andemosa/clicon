@@ -382,6 +382,134 @@ export class ProductsService {
     });
   }
 
+  async getBestSellers(limit = 8) {
+    return this.productRepo
+      .createQueryBuilder('p')
+      .where('p.isActive = true')
+      .orderBy('p.salesCount', 'DESC')
+      .select([
+        'p.id',
+        'p.name',
+        'p.slug',
+        'p.price',
+        'p.image',
+        'p.averageRating',
+        'p.description',
+        'p.discountType',
+        'p.discountValue',
+        'p.stock',
+        'p.salesCount',
+      ])
+      .take(limit)
+      .getMany();
+  }
+
+  async getBestDeals(limit = 8) {
+    return this.productRepo
+      .createQueryBuilder('p')
+      .where('p.isActive = true')
+      .andWhere('p.discountValue IS NOT NULL')
+      .orderBy('p.discountValue', 'DESC')
+      .select([
+        'p.id',
+        'p.name',
+        'p.slug',
+        'p.price',
+        'p.discountType',
+        'p.discountValue',
+        'p.image',
+        'p.description',
+        'p.stock',
+        'p.salesCount',
+        'p.averageRating',
+      ])
+      .take(limit)
+      .getMany();
+  }
+
+  async getTopRated(limit = 8) {
+    return this.productRepo
+      .createQueryBuilder('p')
+      .where('p.isActive = true')
+      .andWhere('p.salesCount > 5')
+      .orderBy('p.averageRating', 'DESC')
+      .select([
+        'p.id',
+        'p.name',
+        'p.slug',
+        'p.price',
+        'p.discountType',
+        'p.discountValue',
+        'p.image',
+        'p.description',
+      ])
+      .take(limit)
+      .getMany();
+  }
+
+  async getHomepageData() {
+    const [bestDeals, bestSellers] = await Promise.all([
+      this.getBestDeals(),
+      this.getBestSellers(),
+    ]);
+
+    return {
+      bestDeals,
+      bestSellers,
+    };
+  }
+
+  async getTopCategories(limit = 6) {
+    const results = await this.categoryRepo
+      .createQueryBuilder('c')
+      .leftJoin('c.products', 'p')
+      .where('c.isActive = :isActive', { isActive: true })
+      .select([
+        'c.name AS name',
+        'c.slug AS slug',
+        'COUNT(p.id) AS "productCount"',
+      ])
+      .groupBy('c.id')
+      .having('COUNT(p.id) > 0') // optional: exclude empty categories
+      .orderBy('COUNT(p.id)', 'DESC')
+      .limit(limit)
+      .getRawMany();
+
+    return results.map((r) => ({
+      name: r.name,
+      slug: r.slug,
+      productCount: Number(r.productCount),
+    }));
+  }
+
+  async getTopTags(limit = 15) {
+    const results = await this.tagRepo
+      .createQueryBuilder('t')
+      .leftJoin('t.products', 'p')
+      .select(['t.name AS name', 'COUNT(p.id) AS "productCount"'])
+      .groupBy('t.id')
+      .having('COUNT(p.id) > 0') // optional
+      .orderBy('COUNT(p.id)', 'DESC')
+      .limit(limit)
+      .getRawMany();
+
+    return results.map((r) => ({
+      name: r.name,
+      productCount: Number(r.productCount),
+    }));
+  }
+
+  async getFooterData() {
+    const [categories, tags] = await Promise.all([
+      this.getTopCategories(6),
+      this.getTopTags(15),
+    ]);
+
+    const result = { categories, tags };
+
+    return result;
+  }
+
   /* =====================
      Helpers
   ====================== */

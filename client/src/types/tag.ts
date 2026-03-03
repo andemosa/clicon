@@ -4,7 +4,7 @@ type BaseTag = {
 
 type Tag = BaseTag & {
   id: string;
-  productCount: number;
+  productCount?: number;
 };
 
 type TagReq = BaseTag;

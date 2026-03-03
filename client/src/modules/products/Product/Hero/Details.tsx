@@ -9,81 +9,113 @@ import {
   IconButton,
   NumberInput,
   RatingGroup,
+  Separator,
   SimpleGrid,
   Stack,
   Text,
 } from "@chakra-ui/react";
-import RadioComp from "./RadioComp";
-import SelectComp from "./SelectComp";
-import { Copy, Heart, Minus, Plus, RefreshCcw, ShoppingCart } from "lucide-react";
 
-const Details = () => {
+import {
+  Facebook,
+  Twitter,
+  ShieldCheck,
+  Copy,
+  Heart,
+  Minus,
+  Plus,
+  RefreshCcw,
+  ShoppingCart,
+} from "lucide-react";
+
+import type { Product } from "@/types";
+
+interface DetailsProps {
+  product: Product;
+}
+
+const roundToHalf = (rating: number) => {
+  return Math.round(rating * 2) / 2;
+};
+
+const Details = ({ product }: DetailsProps) => {
+  const hasDiscount = !!product.discountType;
+
+  const discountedPrice =
+    product.discountType === "percentage"
+      ? product.price - (product.price * product.discountValue!) / 100
+      : product.price;
+
+  const inStock = product.stock > 0;
+
   return (
     <Stack gap={6}>
       <Stack gap={2}>
         <Box>
           <Flex align={"center"} gap={2}>
-            <RatingGroup.Root readOnly count={5} defaultValue={3} size="sm">
+            <RatingGroup.Root
+              readOnly
+              count={5}
+              defaultValue={roundToHalf(product.averageRating)}
+              allowHalf
+              colorPalette={"orange"}
+              size="sm"
+            >
               <RatingGroup.HiddenInput />
               <RatingGroup.Control />
             </RatingGroup.Root>
             <Flex align={"center"} gap={1}>
-              <Text>4.7 Star Rating</Text>
-              <Text>(21,671 User feedback)</Text>
+              <Text>{product.averageRating} Star Rating</Text>
+              <Text>({product.salesCount} sold)</Text>
             </Flex>
           </Flex>
-          <Heading mt={1}>
-            2020 Apple MacBook Pro with Apple M1 Chip (13-inch, 8GB RAM, 256GB
-            SSD Storage) - Space Gray
-          </Heading>
+          <Heading mt={1}>{product.name}</Heading>
         </Box>
-        <SimpleGrid columns={{ base: 2 }} gap={{ base: 2 }}>
-          <Flex align={"center"} gap={1}>
-            <Text>Sku:</Text>
-            <Text>A264671</Text>
-          </Flex>
+        <SimpleGrid columns={{ base: 1, sm: 2 }} gap={{ base: 2 }}>
           <Flex align={"center"} gap={1}>
             <Text>Availability:</Text>
-            <Text>In Stock</Text>
+            <Text
+              fontSize="sm"
+              fontWeight="semibold"
+              color={inStock ? "green.500" : "red.500"}
+            >
+              {inStock ? "In Stock" : "Out of Stock"}
+            </Text>
           </Flex>
-          <Flex align={"center"} gap={1}>
-            <Text>Brand:</Text>
-            <Text>Apple</Text>
-          </Flex>
+
           <Flex align={"center"} gap={1}>
             <Text>Category:</Text>
-            <Text> Electronics Devices</Text>
+            <Text fontWeight="semibold">{product.category.name}</Text>
           </Flex>
         </SimpleGrid>
       </Stack>
-      <Flex gap={2}>
-        <HStack gap={2}>
-          <Text fontSize="md" color="blue.500" fontWeight="semibold">
-            $1699
+
+      <Separator />
+
+      <HStack gap={4} align="center">
+        <Text fontSize="3xl" fontWeight="bold" color="orange.500">
+          ${discountedPrice.toFixed(2)}
+        </Text>
+
+        {hasDiscount && (
+          <Text fontSize="lg" textDecoration="line-through" color="gray.400">
+            ${product.price.toFixed(2)}
           </Text>
-          <Text as="s" fontSize="sm" color="gray.500" fontWeight="medium">
-            $1099
-          </Text>
-        </HStack>
-        <Badge>21% OFF</Badge>
-      </Flex>
-      <SimpleGrid columns={{ base: 2 }} gap={{ base: 2 }}>
-        <Stack>
-          <Text>Color</Text>
-          <RadioComp />
-        </Stack>
-        <Stack>
-          <Text>Size</Text>
-          <SelectComp />
-        </Stack>
-      </SimpleGrid>
-      <SimpleGrid columns={{ base: 4 }} gap={{ base: 2 }}>
+        )}
+
+        {product.discountType === "percentage" && (
+          <Badge colorScheme="green" fontSize="0.9em" px={2}>
+            {product.discountValue}% OFF
+          </Badge>
+        )}
+      </HStack>
+      <SimpleGrid columns={{ base: 1, sm:4 }} gap={{ base: 2 }}>
         <GridItem colSpan={{ base: 1 }}>
           <NumberInput.Root
-            defaultValue="3"
+            defaultValue="1"
             unstyled
             spinOnPress={false}
             min={0}
+            disabled={!inStock}
           >
             <HStack gap="2">
               <NumberInput.DecrementTrigger asChild>
@@ -114,8 +146,15 @@ const Details = () => {
             fontWeight={700}
             _hover={{ bg: "orange.500" }}
             _active={{ bg: "orange.500" }}
+            disabled={!inStock}
           >
-            Add to Cart <ShoppingCart />
+            {inStock ? (
+              <>
+                Add to Cart <ShoppingCart />
+              </>
+            ) : (
+              "Out of Stock"
+            )}
           </Button>
         </GridItem>
         <GridItem colSpan={{ base: 1 }}>
@@ -134,16 +173,21 @@ const Details = () => {
           </Button>
         </GridItem>
       </SimpleGrid>
-      <Flex align={"center"} justify={"space-between"} gap={4}>
+      <Flex
+        direction={{ base: "column", sm: "row" }}
+        align={"center"}
+        justify={"space-between"}
+        gap={4}
+      >
         <Flex align={"center"} gap={4}>
-          <Flex align={"center"} gap={2}>
-            <IconButton size="sm" variant={'ghost'}>
+          <Flex align={"center"} gap={1}>
+            <IconButton size="sm" variant={"ghost"}>
               <Heart />
             </IconButton>
             <Text>Add to wishlist</Text>
           </Flex>
-          <Flex align={"center"} gap={2}>
-            <IconButton size="sm" variant={'ghost'}>
+          <Flex align={"center"} gap={1}>
+            <IconButton size="sm" variant={"ghost"}>
               <RefreshCcw />
             </IconButton>
             <Text>Add to Compare</Text>
@@ -151,11 +195,52 @@ const Details = () => {
         </Flex>
         <Flex align={"center"} gap={1}>
           <Text>Share product:</Text>
-          <IconButton size="sm" variant={'ghost'}>
-            <Copy />
-          </IconButton>
+          <HStack gap={1}>
+            <IconButton
+              aria-label="Share to Facebook"
+              size="sm"
+              variant={"ghost"}
+            >
+              <Facebook />
+            </IconButton>
+            <IconButton
+              aria-label="Share to Twitter"
+              size="sm"
+              variant={"ghost"}
+            >
+              <Twitter />
+            </IconButton>
+            <IconButton size="sm" variant={"ghost"}>
+              <Copy />
+            </IconButton>
+          </HStack>
         </Flex>
       </Flex>
+
+      <Separator />
+
+      <Box
+        w="full"
+        p={4}
+        border="1px"
+        borderColor="gray.200"
+        borderRadius="md"
+        bg="gray.50"
+      >
+        <HStack gap={2} mb={2}>
+          <ShieldCheck size={18} />
+          <Text fontSize="sm" fontWeight="semibold">
+            100% Guarantee Safe Checkout
+          </Text>
+        </HStack>
+
+        <HStack gap={3} fontSize="xs" color="gray.500">
+          <Text>Visa</Text>
+          <Text>Mastercard</Text>
+          <Text>PayPal</Text>
+          <Text>Stripe</Text>
+        </HStack>
+      </Box>
     </Stack>
   );
 };
